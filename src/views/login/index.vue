@@ -1,6 +1,13 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
 
       <div class="title-container">
         <h3 class="title">Login Form</h3>
@@ -45,71 +52,113 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+      <input
+        ref="key"
+        v-model="loginForm.key"
+        name="key"
+        type="hidden"
+      >
+      <el-row :gutter="10">
+        <el-col :span="4" style="width: 60%">
+          <el-form-item prop="verCode">
+            <span class="svg-container">
+              <i class="el-icon-key" />
+            </span>
+            <el-input
+              ref="verCode"
+              v-model="loginForm.verCode"
+              placeholder="验证码"
+              autocomplete="on"
+              name="verCode"
+              tabindex="3"
+              type="text"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col style="width:35%;" :span="4" :offset="1">
+          <el-image
+            style="width:100%; height: 50px;"
+            :src="verCodeImg"
+            @click="getVerCode"
+          /></el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-button
+            :loading="loading"
+            style="width:100%;margin-bottom:30px;"
+            type="primary"
+            @click.native.prevent="handleLogin"
+          >登录</el-button>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-link target="_blank" @click="forget">忘记密码？</el-link>
+        </el-col>
+      </el-row>
+    </el-form>
+    <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
           Or connect with
         </el-button>
-      </div>
-    </el-form>
-
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
+     <el-dialog title="Or connect with" :visible.sync="showDialog">
       Can not be simulated on local, so please combine you own business simulation! ! !
       <br>
       <br>
       <br>
       <social-sign />
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
+// import SocialSign from './components/SocialSignin'
 
 export default {
   name: 'Login',
-  components: { SocialSign },
+  components: { },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入用户名！'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('请输入密码！'))
+      } else {
+        callback()
+      }
+    }
+    const validateVerCode = (rule, value, callback) => {
+      if (value.length < 1) {
+        callback(new Error('请输入验证码！'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'zhangsan',
+        password: '111111',
+        key: '',
+        verCode: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        verCode: [{ required: true, trigger: 'blur', validator: validateVerCode }]
       },
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      verCodeImg: ''
     }
   },
   watch: {
@@ -132,7 +181,10 @@ export default {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
+    } else if (this.loginForm.verCode === '') {
+      this.$refs.verCode.focus()
     }
+    this.getVerCode()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -185,6 +237,22 @@ export default {
         }
         return acc
       }, {})
+    },
+    forget() {
+      this.$router.push({ path: 'forget' || '/', query: this.otherQuery })
+      // this.$router.push({
+      //   path: 'forget' })
+    },
+    getVerCode() {
+      this.$store
+        .dispatch('user/verCode')
+        .then(response => {
+          this.loginForm.key = response.key
+          this.verCodeImg = response.verCode
+        })
+        .catch(e => {
+          console.error(e)
+        })
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -322,7 +390,16 @@ $light_gray:#eee;
     right: 0;
     bottom: 6px;
   }
-
+ .el-row {
+    margin-bottom: 20px;
+    height: 30px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .el-col {
+    border-radius: 4px;
+  }
   @media only screen and (max-width: 470px) {
     .thirdparty-button {
       display: none;

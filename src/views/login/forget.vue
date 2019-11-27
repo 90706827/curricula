@@ -4,28 +4,60 @@
       ref="loginForm"
       :model="loginForm"
       :rules="loginRules"
-      autocomplete="on"
       class="login-form"
+      auto-complete="on"
       label-position="left"
     >
+
       <div class="title-container">
-        <h3 class="title">{{ $t('forget.retrieve') }}</h3>
+        <h3 class="title">找回密码</h3>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <i class="el-icon-user" />
+          <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
           v-model="loginForm.username"
-          :placeholder="$t('forget.username')"
-          autocomplete="on"
+          placeholder="Username"
           name="username"
-          tabindex="1"
           type="text"
+          tabindex="1"
+          auto-complete="on"
         />
       </el-form-item>
+
+      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            name="password"
+            tabindex="2"
+            auto-complete="on"
+            @keyup.native="checkCapslock"
+            @blur="capsTooltip = false"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+      </el-tooltip>
+
+      <input
+        ref="key"
+        v-model="loginForm.key"
+        name="key"
+        type="hidden"
+      >
       <el-row :gutter="10">
         <el-col :span="4" style="width: 60%">
           <el-form-item prop="verCode">
@@ -35,7 +67,7 @@
             <el-input
               ref="verCode"
               v-model="loginForm.verCode"
-              :placeholder="$t('login.verCode')"
+              placeholder="验证码"
               autocomplete="on"
               name="verCode"
               tabindex="3"
@@ -43,12 +75,12 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="4" :offset="1">
+        <el-col style="width:35%;" :span="4" :offset="1">
           <el-image
-            style="width: 140px; height: 50px;"
-            src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-          />
-        </el-col>
+            style="width:100%; height: 50px;"
+            :src="verCodeImg"
+            @click="getVerCode"
+          /></el-col>
       </el-row>
       <el-row>
         <el-col>
@@ -56,55 +88,77 @@
             :loading="loading"
             style="width:100%;margin-bottom:30px;"
             type="primary"
-            @click.native.prevent="next"
-          >{{ $t('next') }}</el-button>
+            @click.native.prevent="handleLogin"
+          >登录</el-button>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-link target="_blank" @click="forget">忘记密码？</el-link>
         </el-col>
       </el-row>
     </el-form>
+    <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+          Or connect with
+        </el-button>
+     <el-dialog title="Or connect with" :visible.sync="showDialog">
+      Can not be simulated on local, so please combine you own business simulation! ! !
+      <br>
+      <br>
+      <br>
+      <social-sign />
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
+import { validUsername } from '@/utils/validate'
+// import SocialSign from './components/SocialSignin'
 
 export default {
   name: 'Login',
-  components: {
-
-  },
+  components: { },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (value.length < 3) {
-        callback(new Error(this.$t('forget.warn.username')))
+      if (!validUsername(value)) {
+        callback(new Error('请输入用户名！'))
+      } else {
+        callback()
+      }
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('请输入密码！'))
       } else {
         callback()
       }
     }
     const validateVerCode = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error(this.$t('forget.warn.username')))
+      if (value.length < 1) {
+        callback(new Error('请输入验证码！'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: '',
-        password: '',
+        username: 'zhangsan',
+        password: '111111',
+        key: '',
         verCode: ''
       },
       loginRules: {
-        username: [
-          { required: true, trigger: 'blur', validator: validateUsername }
-        ],
-        verCode: [
-          { required: true, trigger: 'blur', validator: validateVerCode }
-        ]
+        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        verCode: [{ required: true, trigger: 'blur', validator: validateVerCode }]
       },
+      passwordType: 'password',
       capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      verCodeImg: ''
     }
   },
   watch: {
@@ -119,12 +173,18 @@ export default {
       immediate: true
     }
   },
+  created() {
+    // window.addEventListener('storage', this.afterQRScan)
+  },
   mounted() {
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
+    } else if (this.loginForm.password === '') {
+      this.$refs.password.focus()
     } else if (this.loginForm.verCode === '') {
       this.$refs.verCode.focus()
     }
+    this.getVerCode()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -132,10 +192,7 @@ export default {
   methods: {
     checkCapslock({ shiftKey, key } = {}) {
       if (key && key.length === 1) {
-        if (
-          (shiftKey && (key >= 'a' && key <= 'z')) ||
-          (!shiftKey && (key >= 'A' && key <= 'Z'))
-        ) {
+        if (shiftKey && (key >= 'a' && key <= 'z') || !shiftKey && (key >= 'A' && key <= 'Z')) {
           this.capsTooltip = true
         } else {
           this.capsTooltip = false
@@ -145,24 +202,30 @@ export default {
         this.capsTooltip = false
       }
     },
-    next() {
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus()
+      })
+    },
+    handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
+          this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({
-                path: this.redirect || '/',
-                query: this.otherQuery
-              })
+              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
-            .catch(e => {
-              console.error(e)
+            .catch(() => {
               this.loading = false
             })
         } else {
+          console.log('error submit!!')
           return false
         }
       })
@@ -174,14 +237,50 @@ export default {
         }
         return acc
       }, {})
+    },
+    forget() {
+      this.$router.push({
+        path: 'forget' })
+    },
+    getVerCode() {
+      this.$store
+        .dispatch('user/verCode')
+        .then(response => {
+          this.loginForm.key = response.key
+          this.verCodeImg = response.verCode
+        })
+        .catch(e => {
+          console.error(e)
+        })
     }
+    // afterQRScan() {
+    //   if (e.key === 'x-admin-oauth-code') {
+    //     const code = getQueryObject(e.newValue)
+    //     const codeMap = {
+    //       wechat: 'code',
+    //       tencent: 'code'
+    //     }
+    //     const type = codeMap[this.auth_type]
+    //     const codeName = code[type]
+    //     if (codeName) {
+    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+    //         this.$router.push({ path: this.redirect || '/' })
+    //       })
+    //     } else {
+    //       alert('第三方登录失败')
+    //     }
+    //   }
+    // }
   }
 }
 </script>
 
 <style lang="scss">
-$bg: #283443;
-$light_gray: #fff;
+/* 修复input 背景不协调 和光标变色 */
+/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
+
+$bg:#283443;
+$light_gray:#fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -199,16 +298,16 @@ $cursor: #fff;
 
     input {
       background: transparent;
-      border: 0;
+      border: 0px;
       -webkit-appearance: none;
-      border-radius: 0;
+      border-radius: 0px;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
       height: 47px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
-        box-shadow: 0 0 0 1000px $bg inset !important;
+        box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
       }
     }
@@ -224,9 +323,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b;
-$dark_gray: #889aa4;
-$light_gray: #eee;
+$bg:#2d3a4b;
+$dark_gray:#889aa4;
+$light_gray:#eee;
 
 .login-container {
   min-height: 100%;
@@ -262,9 +361,7 @@ $light_gray: #eee;
     width: 30px;
     display: inline-block;
   }
-  a {
-    color: #ffffff;
-  }
+
   .title-container {
     position: relative;
 
@@ -274,15 +371,6 @@ $light_gray: #eee;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
-    }
-
-    .set-language {
-      color: #fff;
-      position: absolute;
-      top: 3px;
-      font-size: 18px;
-      right: 0px;
-      cursor: pointer;
     }
   }
 
@@ -301,7 +389,7 @@ $light_gray: #eee;
     right: 0;
     bottom: 6px;
   }
-  .el-row {
+ .el-row {
     margin-bottom: 20px;
     height: 30px;
     &:last-child {
@@ -310,6 +398,11 @@ $light_gray: #eee;
   }
   .el-col {
     border-radius: 4px;
+  }
+  @media only screen and (max-width: 470px) {
+    .thirdparty-button {
+      display: none;
+    }
   }
 }
 </style>
