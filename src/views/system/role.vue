@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { list, save, update, remove, getMenuAllTree, getRoleMenuList } from '@/api/system/role'
+import { roleList, roleSave, roleUpdate, roleRemove, getMenuAllTree, getRoleMenuList } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -104,7 +104,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      list(this.listQuery).then(resp => {
+      roleList(this.listQuery).then(resp => {
         this.list = resp.data.rows
         this.total = resp.data.total
         this.listQuery.page = resp.data.page
@@ -148,7 +148,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.menuList = this.$refs.tree.getCheckedKeys()
-          save(this.temp).then(resp => {
+          roleSave(this.temp).then(resp => {
             if (resp.code === 200) {
               this.getList()
               this.dialogFormVisible = false
@@ -178,7 +178,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.menuList = this.$refs.tree.getCheckedKeys()
-          update(this.temp).then(resp => {
+          roleUpdate(this.temp).then(resp => {
             if (resp.success) {
               this.getList()
               this.dialogFormVisible = false
@@ -193,7 +193,7 @@ export default {
     },
     load(tree, treeNode, resolve) {
       this.listQuery.id = tree.id
-      list(this.listQuery).then(resp => {
+      roleList(this.listQuery).then(resp => {
         resolve(resp.data)
       })
     },
@@ -205,7 +205,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.list = []
-        remove({ id: row.id }).then(resp => {
+        roleRemove({ id: row.id }).then(resp => {
           this.getList()
           this.$message({
             message: resp.message,

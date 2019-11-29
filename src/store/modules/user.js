@@ -1,4 +1,4 @@
-import { login, logout, getInfo, verCode } from '@/api/user'
+import { login, logout, getInfo, verCode } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { list, save, update, remove } from '@/api/system/menu'
+import { menuList, menuSave, menuUpdate, menuRemove } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 export default {
   name: 'Menu',
@@ -92,7 +92,7 @@ export default {
     getList() {
       this.listLoading = true
       this.tableShow = false
-      list(this.listQuery).then(resp => {
+      menuList(this.listQuery).then(resp => {
         this.list = resp.data
         // Just to simulate the time of the request
         this.tableShow = true
@@ -123,7 +123,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          save(this.temp).then(resp => {
+          menuSave(this.temp).then(resp => {
             if (resp.success) {
               this.list = []
               this.listQuery.id = 0
@@ -141,7 +141,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          update(this.temp).then(resp => {
+          menuUpdate(this.temp).then(resp => {
             this.list = []
             this.listQuery.id = 0
             this.getList()
@@ -165,7 +165,7 @@ export default {
     },
     load(tree, treeNode, resolve) {
       this.listQuery.id = tree.id
-      list(this.listQuery).then(resp => {
+      menuList(this.listQuery).then(resp => {
         resolve(resp.data)
       })
     },
@@ -177,7 +177,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.list = []
-        remove({ id: row.id }).then(resp => {
+        menuRemove({ id: row.id }).then(resp => {
           this.listQuery.id = 0
           this.getList()
           this.$message({

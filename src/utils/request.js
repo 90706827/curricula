@@ -33,11 +33,13 @@ service.interceptors.response.use(
     if (res.code !== 200) {
       // 50008: Illegal token; 50012: Other clients logged in; 401: Token expired;
       if (res.code === 401) {
-        Message({
-          message: '没有访问权限',
-          type: 'warning',
-          duration: 5 * 1000
-        })
+        // Message({
+        //   message: '没有访问权限',
+        //   type: 'warning',
+        //   duration: 5 * 1000
+        // })
+        // this.$store.dispatch('user/logout')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
       } else {
         Message({
           message: res.message || 'Error',

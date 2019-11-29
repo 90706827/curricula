@@ -117,7 +117,7 @@ const actions = {
       roles.forEach(role => {
         roleList.push(role.ename)
       })
-      if (roleList.size < 1) {
+      if (roleList[0] === 'visitor') {
         accessedRoutes = asyncRoutes || []
       } else {
         const router = routers[roleList[0]]

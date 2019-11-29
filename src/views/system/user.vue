@@ -1,49 +1,49 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" :placeholder="$t('system.user.username')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.username" placeholder="ABCD" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(1)">
-        {{ $t('table.search') }}
+        查询
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
+        添加
       </el-button>
     </div>
     <!-- 列表 -->
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column :label="$t('system.user.avatar')" width="90px" align="center" prop="avatar">
+      <el-table-column label="头像" width="90px" align="center" prop="photo">
         <template slot-scope="scope">
-          <el-image v-if="scope.row.avatar !== null" :src="`${scope.row.avatar}`" style="width: 20px; height: 20px" />
-          <el-image v-if="scope.row.avatar === null" src="http://upyun.Mr.jangni.cn/head.png" style="width: 20px; height: 20px" />
+          <el-image v-if="scope.photo !== null" :src="`${scope.photo}`" style="width: 20px; height: 20px" />
+          <el-image v-if="scope.photo === null" :src="headImg" style="width: 20px; height: 20px" />
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('system.user.email')" prop="email" />
-      <el-table-column align="center" :label="$t('system.user.username')" prop="username" />
-      <el-table-column align="center" :label="$t('system.user.phone')" prop="phone" />
-      <el-table-column width="250" :label="$t('table.actions')" class-name="small-padding fixed-width">
+      <el-table-column align="center" label="昵称" prop="nickname" />
+      <el-table-column align="center" label="手机" prop="phone" />
+      <el-table-column align="center" label="状态" prop="status" />
+      <el-table-column width="250" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button-group>
-            <el-button type="primary" effect="dark" size="small" @click="handleUpdate(row)">{{ $t('table.edit') }}</el-button>
-            <el-button type="danger" effect="dark" size="small" @click="handleDelete(row)">{{ $t('table.delete') }}</el-button>
+            <el-button type="primary" effect="dark" size="small" @click="handleUpdate(row)">编辑</el-button>
+            <el-button type="danger" effect="dark" size="small" @click="handleDelete(row)">删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize" @pagination="handleFilter" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="handleFilter" />
     <!-- 增加，修改-->
-    <el-dialog :title="$t('system.user.'+dialogStatus)" :visible.sync="dialogFormVisible">
+    <el-dialog title="标题" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('system.user.username')" prop="username">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-        <el-form-item :label="$t('system.user.phone')" prop="phone">
+        <el-form-item label="手机号码" prop="phone">
           <el-input v-model="temp.phone" />
         </el-form-item>
-        <el-form-item :label="$t('system.user.email')" prop="email">
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="temp.email" />
         </el-form-item>
-        <el-form-item :label="$t('system.user.roleTree')">
+        <el-form-item label="权限">
           <el-tree
             ref="tree"
             :data="roleAllList"
@@ -56,10 +56,10 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
+          关闭
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
+          确认
         </el-button>
       </div>
     </el-dialog>
@@ -67,9 +67,10 @@
 </template>
 
 <script>
-import { list, save, update, remove, getRoleAllList, getUserRoleList } from '@/api/system/user'
+import { userList, userSave, userUpdate, userRemove, getRoleAllList, getUserRoleList } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import headImg from '@/assets/default/headImg.gif'
 export default {
   name: 'User',
   directives: { waves },
@@ -78,9 +79,9 @@ export default {
     return {
       listLoading: true,
       listQuery: {
-        name: '',
+        username: '',
         page: 1,
-        pageSize: 20
+        size: 10
       },
       total: 0,
       list: [],
@@ -96,9 +97,10 @@ export default {
       dialogStatus: '',
       dialogFormVisible: false,
       rules: {
-        username: [{ required: true, message: this.$t('system.user.usernameNotBlank'), trigger: 'blur' }],
-        phone: [{ required: true, message: this.$t('system.user.phoneNotBlank'), trigger: 'blur' }]
-      }
+        username: [{ required: true, message: '用户名称', trigger: 'blur' }],
+        phone: [{ required: true, message: '手机号码', trigger: 'blur' }]
+      },
+      headImg: headImg
     }
   },
   created() {
@@ -107,15 +109,23 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      list(this.listQuery).then(response => {
-        this.list = response.data.rows
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.1 * 1000)
+      new Promise((resolve, reject) => {
+        userList(this.listQuery).then(response => {
+          this.list = response.data.content
+          this.total = response.data.totalPages
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
       })
+      this.listLoading = false
+      // userList(this.listQuery).then(response => {
+      //   this.list = response.data.content
+      //   this.total = response.data.totalPages
+      //   setTimeout(() => {
+      //     this.listLoading = false
+      //   }, 1.1 * 1000)
+      // })
     },
     getRoleAllList() {
       getRoleAllList().then(resp => {
@@ -149,7 +159,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.roleList = this.$refs.tree.getCheckedKeys()
-          save(this.temp).then(resp => {
+          userSave(this.temp).then(resp => {
             if (resp.success) {
               this.getList()
               this.dialogFormVisible = false
@@ -179,7 +189,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.roleList = this.$refs.tree.getCheckedKeys()
-          update(this.temp).then(resp => {
+          userUpdate(this.temp).then(resp => {
             if (resp.success) {
               this.getList()
               this.dialogFormVisible = false
@@ -200,7 +210,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.list = []
-        remove({ id: row.id }).then(resp => {
+        userRemove({ id: row.id }).then(resp => {
           this.getList()
           this.$message({
             message: resp.message,
