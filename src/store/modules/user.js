@@ -3,6 +3,7 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256
 import hand from '@/assets/default/headImg.gif'
+import store from '@/store'
 
 const state = {
   token: getToken(),
@@ -28,31 +29,37 @@ const mutations = {
   SET_ROLES: (state, roles) => {
     state.roles = roles
   },
+  SET_ROLE: (state, role) => {
+    state.role = role
+  },
   SET_ROUTERS: (state, routers) => {
     state.routers = routers
   }
 }
 
 const actions = {
-  // user login
+  // 用户登录
   login({ commit }, userInfo) {
     const { username, password, key, verCode } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(),
+      login({
+        username: username.trim(),
         password: sha256(password.trim()),
         key: key,
-        verCode: verCode.trim() }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
+        verCode: verCode.trim()
+      }).then(response => {
+        if (response.code === 200) {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          setToken(data.token)
+        }
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
     })
   },
-
-  // get user info
+  // 获取用户信息
   getInfo({ commit }) {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
@@ -63,7 +70,6 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录.')
         }
-
         const {
           routers,
           roles,
@@ -72,7 +78,6 @@ const actions = {
           introduction
         } = data
 
-        // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('暂无权限，禁止访问!')
         }
@@ -81,11 +86,19 @@ const actions = {
           header = hand + '?' + +new Date()
         }
         const roleList = []
-        roles.forEach(role => {
-          roleList.push(role.ename)
+        roles.forEach(item => {
+          const role = {}
+          role.name = item.name
+          role.code = item.ename
+          roleList.push(role)
         })
+        data.roles = roleList
+        const role = roleList[0].code
+        data.role = role
+        console.log('roleList', roleList)
         commit('SET_ROUTERS', routers)
         commit('SET_ROLES', roleList)
+        commit('SET_ROLE', role)
         commit('SET_NAME', name)
         commit('SET_AVATAR', header)
         commit('SET_INTRODUCTION', introduction)
@@ -94,31 +107,8 @@ const actions = {
         reject(error)
       })
     })
-    // return new Promise((resolve, reject) => {
-    //   getInfo(state.token).then(response => {
-    //     const { data } = response
-
-    //     if (!data) {
-    //       reject('Verification failed, please Login again.')
-    //     }
-
-    //     const { roles, name, avatar, introduction } = data
-
-    //     // roles must be a non-empty array
-    //     if (!roles || roles.length <= 0) {
-    //       reject('getInfo: roles must be a non-null array!')
-    //     }
-
-    //     commit('SET_ROLES', roles)
-    //     commit('SET_NAME', name)
-    //     commit('SET_AVATAR', avatar)
-    //     commit('SET_INTRODUCTION', introduction)
-    //     resolve(data)
-    //   }).catch(error => {
-    //     reject(error)
-    //   })
-    // })
   },
+  // 获取验证码
   verCode() {
     return new Promise((resolve, reject) => {
       verCode().then((response) => {
@@ -131,12 +121,14 @@ const actions = {
       })
     })
   },
-  // user logout
+  // 用户退出
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
+        commit('SET_ROLE', '')
+        commit('SET_ROUTERS', [])
         removeToken()
         resetRouter()
         resolve()
@@ -146,37 +138,27 @@ const actions = {
     })
   },
 
-  // remove token
+  // 清除缓存
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_ROLE', '')
+      commit('SET_ROUTERS', [])
       removeToken()
       resolve()
     })
   },
 
-  // dynamically modify permissions
-  changeRoles({ commit, dispatch }, role) {
+  // 切换角色
+  changeRoles({ commit, dispatch, state }, role) {
     return new Promise(async resolve => {
-      const token = role + '-token'
-
-      commit('SET_TOKEN', token)
-      setToken(token)
-
-      const { roles } = await dispatch('getInfo')
-
+      const { routers } = await dispatch('getInfo')
       resetRouter()
-
-      // generate accessible routes map based on roles
-      const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
-
-      // dynamically add accessible routes
+      const accessRoutes = await store.dispatch('permission/generateRoutes', { routers, role })
       router.addRoutes(accessRoutes)
-
-      // reset visited views and cached views
-      dispatch('tagsView/delAllViews', null, { root: true })
-
+      commit('SET_ROLE', role)
+      store.dispatch('tagsView/delAllViews', null, { root: true })
       resolve()
     })
   }

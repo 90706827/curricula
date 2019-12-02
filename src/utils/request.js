@@ -27,28 +27,35 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    const res = response.data
-    console.log('res', res)
+    const resp = response.data
+    console.log('resp', resp)
     // code 为自定义，200不报错！
-    if (res.code !== 200) {
+    if (resp.code !== 200) {
       // 50008: Illegal token; 50012: Other clients logged in; 401: Token expired;
-      if (res.code === 401) {
-        // Message({
-        //   message: '没有访问权限',
-        //   type: 'warning',
-        //   duration: 5 * 1000
-        // })
-        // this.$store.dispatch('user/logout')
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      if (resp.code === 401) {
+        Message({
+          message: '登录失效，请重新登录！',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        setTimeout(() => {
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+        }, 2000)
+      } else if (resp.code >= 700 && resp.code <= 750) {
+        // 有页面自行处理错误
+        console.log('放行返回码：', resp.code, resp.message)
+        return resp
       } else {
         Message({
-          message: res.message || 'Error',
+          message: resp.message || 'Error',
           type: 'error',
           duration: 5 * 1000
         })
       }
     } else {
-      return res
+      return resp
     }
     // if the custom code is not 20000, it is judged as an error.
     // if (res.code !== 20000) {
@@ -78,11 +85,19 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    if (error.message === 'Network Error') {
+      Message({
+        message: '网络或服务异常!',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    } else {
+      Message({
+        message: error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )

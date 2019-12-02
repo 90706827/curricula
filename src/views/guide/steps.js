@@ -40,6 +40,14 @@ const steps = [
     }
   },
   {
+    element: '#roles-change',
+    popover: {
+      title: 'Switch Roles',
+      description: 'Switch the Users Roles',
+      position: 'left'
+    }
+  },
+  {
     element: '#tags-view-container',
     popover: {
       title: 'Tags view',

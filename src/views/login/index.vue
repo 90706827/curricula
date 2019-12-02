@@ -10,7 +10,7 @@
     >
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">用户登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -112,15 +112,16 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+// import { validUsername } from '@/utils/validate'
 // import SocialSign from './components/SocialSignin'
+import { Message } from 'element-ui'
 
 export default {
   name: 'Login',
   components: { },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      if (value.length < 4) {
         callback(new Error('请输入用户名！'))
       } else {
         callback()
@@ -217,7 +218,16 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
+            .then(response => {
+              console.log('code', response.code)
+              if (response.code === 700) {
+                Message({
+                  message: response.message,
+                  type: 'warning',
+                  duration: 5 * 1000
+                })
+                this.getVerCode()
+              }
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })

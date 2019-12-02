@@ -8,6 +8,7 @@ import Layout from '@/layout'
  * @param route
  */
 function hasPermission(roles, route) {
+  console.log('hasPermission roles', roles, route)
   if (route.meta && route.meta.roles) {
     return roles.some(role => route.meta.roles.includes(role))
   } else {
@@ -58,13 +59,14 @@ export function filterAsyncRouters(item, routers) {
     if (!menu.redirect) {
       delete menu.redirect
     }
-    if (menu.children.length === 1) {
+    console.log('menu.children:', menu.children)
+    let childrenLength = 0
+    if (menu.children) {
+      childrenLength = menu.children.length
+    }
+    if (childrenLength === 1) {
       delete menu.name
     }
-
-    // if (menu.children.length > 1) {
-    //   menu.path = '/'
-    // }
     if (item === 1) {
       menu.path = ''
       delete menu.name
@@ -75,7 +77,7 @@ export function filterAsyncRouters(item, routers) {
     if (menu.hidden === 'false') {
       delete menu.hidden
     }
-    if (menu.children.length !== 1) {
+    if (childrenLength !== 1) {
       if (menu.icon && menu.title) { // 配置 菜单标题 与 图标
         menu.meta = {
           title: menu.title,
@@ -85,8 +87,8 @@ export function filterAsyncRouters(item, routers) {
     }
     delete menu.icon
     delete menu.title
-    if (menu.children.length > 0) {
-      filterAsyncRouters(menu.children.length, menu.children)
+    if (childrenLength > 0) {
+      filterAsyncRouters(childrenLength, menu.children)
     } else {
       delete menu.children
     }
@@ -108,32 +110,21 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }, { routers, roles }) {
+  generateRoutes({ commit }, { routers, role }) {
     return new Promise(resolve => {
       let accessedRoutes
       console.log('routers', routers)
-      console.log('roles', roles)
-      const roleList = []
-      roles.forEach(role => {
-        roleList.push(role.ename)
-      })
-      if (roleList[0] === 'visitor') {
+      console.log('role', role)
+      if (role === 'visitor') {
         accessedRoutes = asyncRoutes || []
       } else {
-        const router = routers[roleList[0]]
+        const router = routers[role]
         accessedRoutes = filterAsyncRouters(0, router)
         accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
       }
       console.log('accessedRoutes', accessedRoutes)
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
-      // if (roles.includes('admin')) {
-      //   accessedRoutes = asyncRoutes || []
-      // } else {
-      //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-      // }
-      // commit('SET_ROUTES', accessedRoutes)
-      // resolve(accessedRoutes)
     })
   }
 }
