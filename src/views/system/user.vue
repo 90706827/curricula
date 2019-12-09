@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.username" placeholder="ABCD" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.username" placeholder="用户名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(1)">
         查询
       </el-button>
@@ -10,17 +10,43 @@
       </el-button>
     </div>
     <!-- 列表 -->
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column label="头像" width="90px" align="center" prop="photo">
-        <template slot-scope="scope">
-          <el-image v-if="scope.photo !== null" :src="`${scope.photo}`" style="width: 20px; height: 20px" />
-          <el-image v-if="scope.photo === null" :src="headImg" style="width: 20px; height: 20px" />
+    <el-table
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+    >
+      <el-table-column align="center" label="头像" prop="photo">
+        <template slot-scope="{row}">
+          <el-image
+            style="width:40px; height:40px;"
+            :src="row.photo"
+          />
         </template>
       </el-table-column>
+      <el-table-column align="center" label="用户名" prop="username" />
       <el-table-column align="center" label="昵称" prop="nickname" />
       <el-table-column align="center" label="手机" prop="phone" />
-      <el-table-column align="center" label="状态" prop="status" />
-      <el-table-column width="250" label="操作" class-name="small-padding fixed-width">
+      <el-table-column align="center" label="性别" prop="gender">
+        <template slot-scope="{row}">
+          <span v-if="row.gender=== 1">男</span>
+          <span v-else-if="row.gender=== 0">女</span>
+          <span v-else>未知</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="生日" prop="birth" />
+      <el-table-column align="center" label="邮箱" prop="email" />
+      <el-table-column align="center" label="状态" prop="status">
+        <template slot-scope="{row}">
+          <span v-if="row.status=== '1'">正常</span>
+          <span v-else-if="row.status=== '0'">冻结</span>
+          <span v-else>未知</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="250" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button-group>
             <el-button type="primary" effect="dark" size="small" @click="handleUpdate(row)">编辑</el-button>
@@ -67,10 +93,10 @@
 </template>
 
 <script>
-import { userList, userSave, userUpdate, userRemove, getRoleAllList, getUserRoleList } from '@/api/user'
+import { userSave, userUpdate, userRemove, getRoleAllList, getUserRoleList } from '@/api/user'
+import { userList } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import headImg from '@/assets/default/headImg.gif'
 export default {
   name: 'User',
   directives: { waves },
@@ -80,7 +106,7 @@ export default {
       listLoading: true,
       listQuery: {
         username: '',
-        page: 1,
+        page: 0,
         size: 10
       },
       total: 0,
@@ -99,8 +125,7 @@ export default {
       rules: {
         username: [{ required: true, message: '用户名称', trigger: 'blur' }],
         phone: [{ required: true, message: '手机号码', trigger: 'blur' }]
-      },
-      headImg: headImg
+      }
     }
   },
   created() {
@@ -133,7 +158,7 @@ export default {
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.listQuery.page = 0
       this.getList()
     },
     resetTemp() {

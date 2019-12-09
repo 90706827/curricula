@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { menuList, menuSave, menuUpdate, menuRemove } from '@/api/user'
+import { menuList, menuSave, menuUpdate, menuRemove } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 export default {
   name: 'Menu',

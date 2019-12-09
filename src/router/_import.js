@@ -12,5 +12,13 @@ const map = {
   dashboard: () => import('@/views/dashboard/index'),
   user: () => import('@/views/system/user'),
   role: () => import('@/views/system/role'),
-  menu: () => import('@/views/system/menu')
+  menu: () => import('@/views/system/menus'),
+  addMenu: () => import('@/views/system/addMenu'),
+  nestedMenu1: () => import('@/views/nested/menu1/index'),
+  nestedMenu11: () => import('@/views/nested/menu1/menu1-1'),
+  nestedMenu12: () => import('@/views/nested/menu1/menu1-2'),
+  nestedMenu121: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
+  nestedMenu122: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+  nestedMenu13: () => import('@/views/nested/menu1/menu1-3'),
+  nestedMenu2: () => import('@/views/nested/menu2/index')
 }

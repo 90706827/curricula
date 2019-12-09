@@ -2,25 +2,25 @@
   <div class="app-container">
     <!-- 搜索啊 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.name" :placeholder="$t('table.name')" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.name" placeholder="角色" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(1)">
-        {{ $t('table.search') }}
+        查询
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
+        添加
       </el-button>
     </div>
     <!-- 角色列表 -->
     <el-table :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column width="180" :label="$t('table.name')" prop="name" />
-      <el-table-column width="180" :label="$t('table.ename')" prop="ename" />
-      <el-table-column width="180" :label="$t('table.description')" prop="description" />
-      <el-table-column :label="$t('table.createTime')" prop="createTime" />
-      <el-table-column width="250" :label="$t('table.actions')" class-name="small-padding fixed-width">
+      <el-table-column width="180" label="名字" prop="name" />
+      <el-table-column width="180" label="标识" prop="ename" />
+      <el-table-column width="180" label="描述" prop="description" />
+      <el-table-column label="创建时间" prop="createTime" />
+      <el-table-column width="250" label="操作" lass-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button-group>
-            <el-button type="primary" effect="dark" size="small" @click="handleUpdate(row)">{{ $t('table.edit') }}</el-button>
-            <el-button type="danger" effect="dark" size="small" @click="handleDelete(row)">{{ $t('table.delete') }}</el-button>
+            <el-button type="primary" effect="dark" size="small" @click="handleUpdate(row)">编辑</el-button>
+            <el-button type="danger" effect="dark" size="small" @click="handleDelete(row)">删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -28,18 +28,18 @@
     <!-- 分页 -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize" @pagination="handleFilter" />
     <!-- 增加，修改 -->
-    <el-dialog :title="$t('system.role.'+dialogStatus)" :visible.sync="dialogFormVisible">
+    <el-dialog title="增加" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.name')" prop="name">
+        <el-form-item label="名字" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item :label="$t('table.ename')" prop="ename">
+        <el-form-item label="标识" prop="ename">
           <el-input v-model="temp.ename" />
         </el-form-item>
-        <el-form-item :label="$t('table.description')">
+        <el-form-item label="描述">
           <el-input v-model="temp.description" />
         </el-form-item>
-        <el-form-item :label="$t('system.role.menuTree')">
+        <el-form-item label="菜单">
           <el-tree
             ref="tree"
             :data="menuAllTree"
@@ -52,10 +52,10 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
+          关闭
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
+          确认
         </el-button>
       </div>
     </el-dialog>
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { roleList, roleSave, roleUpdate, roleRemove, getMenuAllTree, getRoleMenuList } from '@/api/user'
+import { roleList, roleSave, roleUpdate, roleRemove, getMenuAllTree, getRoleMenuList } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -93,8 +93,8 @@ export default {
         menuList: []
       },
       rules: {
-        name: [{ required: true, message: this.$t('system.menu.nameNotBlank'), trigger: 'blur' }],
-        ename: [{ required: true, message: this.$t('system.menu.enameNotBlank'), trigger: 'blur' }]
+        name: [{ required: true, message: '请填写名称', trigger: 'blur' }],
+        ename: [{ required: true, message: '请填写标识', trigger: 'blur' }]
       }
     }
   },
@@ -105,10 +105,10 @@ export default {
     getList() {
       this.listLoading = true
       roleList(this.listQuery).then(resp => {
-        this.list = resp.data.rows
-        this.total = resp.data.total
-        this.listQuery.page = resp.data.page
-        this.listQuery.pageSize = resp.data.pageSize
+        // this.list = resp.data.rows
+        // this.total = resp.data.total
+        // this.listQuery.page = resp.data.page
+        // this.listQuery.size = resp.data.size
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
@@ -198,10 +198,10 @@ export default {
       })
     },
     handleDelete(row) {
-      const tip = `${row.name} ${this.$t('table.delete')}`
-      this.$confirm(tip, this.$t('table.prompt'), {
-        confirmButtonText: this.$t('table.confirm'),
-        cancelButtonText: this.$t('table.cancel'),
+      const tip = `${row.name} 删除`
+      this.$confirm(tip, '删除', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.list = []
@@ -215,7 +215,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: this.$t('table.cancel')
+          message: '取消'
         })
       })
     }

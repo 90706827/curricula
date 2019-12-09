@@ -1,3 +1,5 @@
+import { saveErrorLog } from '@/api/system'
+
 const state = {
   logs: []
 }
@@ -17,6 +19,17 @@ const actions = {
   },
   clearErrorLog({ commit }) {
     commit('CLEAR_ERROR_LOG')
+  },
+  saveErrorLog({ commit }, log) {
+    const { err, vm, info, url } = log
+    return new Promise((resolve, reject) => {
+      saveErrorLog({ err, vm, info, url })
+        .then(() => {
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+    })
   }
 }
 
