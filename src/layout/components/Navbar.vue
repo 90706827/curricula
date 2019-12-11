@@ -12,11 +12,11 @@
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
-        <el-tooltip content="字体大小" effect="dark" placement="bottom">
+        <el-tooltip content="字体大小" effect="dark" placement="top">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="切换角色" effect="dark" placement="bottom">
+        <el-tooltip content="切换角色" effect="dark" placement="top">
           <roles-change id="roles-change" class="right-menu-item hover-effect" />
         </el-tooltip>
       </template>

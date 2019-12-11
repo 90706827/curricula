@@ -1,18 +1,16 @@
 
-import Layout from '@/layout'
-
 export default file => {
-  return map[file] || null
+  return map[file] || map['dashboard']
 }
 
 const map = {
-  layout: () => Layout,
+  template: () => import('@/views/template/index'),
   theme: () => import('@/views/theme/index'),
   system: () => import('@/views/system/user'),
   dashboard: () => import('@/views/dashboard/index'),
   user: () => import('@/views/system/user'),
   role: () => import('@/views/system/role'),
-  menu: () => import('@/views/system/menus'),
+  menuList: () => import('@/views/system/menuList'),
   addMenu: () => import('@/views/system/addMenu'),
   nestedMenu1: () => import('@/views/nested/menu1/index'),
   nestedMenu11: () => import('@/views/nested/menu1/menu1-1'),

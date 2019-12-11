@@ -4,7 +4,7 @@
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="菜单名称1" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter()">
-        查询
+        查询A
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate()">
         添加
@@ -70,7 +70,7 @@
 import { menuList, menuChildList } from '@/api/system'
 import waves from '@/directive/waves'
 export default {
-  name: 'Menus',
+  name: 'AddMenu',
   directives: { waves },
   data() {
     return {

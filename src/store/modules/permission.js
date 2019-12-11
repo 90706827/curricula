@@ -37,12 +37,11 @@ export function filterAsyncRoutes(routes, roles) {
   return res
 }
 
-export function filterAsyncRouters(item, routers) {
+export function filterAsyncRouters(routers) {
   const res = []
   routers.forEach(menu => {
     // 删除无用属性
     delete menu.menuId
-    delete menu.parentId
     delete menu.sort
     delete menu.description
     delete menu.status
@@ -50,12 +49,16 @@ export function filterAsyncRouters(item, routers) {
     delete menu.insertBy
     delete menu.updateTime
     delete menu.updateBy
-    if (menu.component) {
-      menu.component = _import(menu.component) // 动态匹配组件
-    } else {
+    if (menu.parentId === '0' && !menu.component) {
       menu.component = Layout
+    } else {
+      if (menu.component) {
+        menu.component = _import(menu.component)
+      } else {
+        delete menu.component
+      }
     }
-
+    delete menu.parentId
     if (!menu.redirect) {
       delete menu.redirect
     }
@@ -67,30 +70,29 @@ export function filterAsyncRouters(item, routers) {
     if (childrenLength === 1) {
       delete menu.name
     }
-    if (item === 1) {
-      menu.path = ''
-      delete menu.name
-    }
-    if (!menu.name) {
-      delete menu.name
-    }
+    // if (item === 1) {
+    // menu.path = ''
+    // delete menu.name
+    // }
+    // if (!menu.name) {
+    //   delete menu.name
+    // }
     if (menu.hidden === 'false') {
       delete menu.hidden
     }
-    if (childrenLength !== 1) {
-      if (menu.icon && menu.title) { // 配置 菜单标题 与 图标
-        menu.meta = {
-          title: menu.title,
-          icon: menu.icon
-        }
-      }
+    menu.meta = {}
+    if (menu.icon) {
+      menu.meta.icon = menu.icon
+      delete menu.icon
     }
-    delete menu.icon
-    delete menu.title
+    if (menu.title) {
+      menu.meta.title = menu.title
+      delete menu.title
+    }
     if (childrenLength > 0) {
-      filterAsyncRouters(childrenLength, menu.children)
+      filterAsyncRouters(menu.children)
     } else {
-      delete menu.children
+      menu.children = []
     }
     res.push(menu)
   })
@@ -119,7 +121,7 @@ const actions = {
         accessedRoutes = asyncRoutes || []
       } else {
         const router = routers[role]
-        accessedRoutes = filterAsyncRouters(0, router)
+        accessedRoutes = filterAsyncRouters(router)
         accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
       }
       console.log('accessedRoutes', accessedRoutes)

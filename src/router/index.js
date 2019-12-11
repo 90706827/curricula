@@ -75,6 +75,12 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+  // {
+  //   path: '/addmenu',
+  //   component: () => import('@/views/system/addmenu'),
+  //   hidden: true,
+  //   meta: { title: '增加菜单' }
+  // },
   {
     path: '/',
     component: Layout,
