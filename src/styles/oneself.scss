@@ -1,0 +1,67 @@
+.drawer-head {
+  /* position: absolute; */
+   top: 0px;
+   left: 0px;
+   padding: 19px 35px;
+   font-size: 16px;
+   font-weight: 100;
+   width: 100%;
+   background: #fff;
+   z-index: 999999999;
+   border-bottom: 1px solid #eee;
+   label {
+     font-weight: 500;
+   }
+ }
+ .drawer-tab-pane {
+  font-weight: 100;
+  font-size: 16px;
+ }
+ .el-tabs__item{
+  font-weight: 100;
+  font-size: 18px;
+
+ }
+ .drawer-head-span {
+   color: #ccc;
+   font-weight: 200;
+   padding-left: 10px;
+ }
+ .drawer-body {
+   width: 100%;
+   height: 90vh;
+   overflow: scroll;
+   padding-bottom: 90px;
+   padding-right: 40px;
+   padding-left: 40px;
+ }
+
+ .drawer-form-title {
+   width: 100%;
+   margin-top: 20px;
+   margin-bottom: 20px;
+   padding: 0px 15px;
+   min-height: 38px;
+   background: #eceff4;
+   line-height: 38px;
+   label {
+     font-weight: 200;
+   }
+ }
+ .drawer-form-content {
+   font-weight: normal;
+   font-size: 14px;
+   overflow: hidden;
+ }
+  .drawer-foot {
+   position: absolute;
+   bottom: 0px;
+   left: 0px;
+   width: 100%;
+   background: #fff;
+   z-index: 999999999;
+   text-align: center;
+   padding: 10px 0px;
+   margin-bottom: 0px;
+   border-top: 1px solid #eee;
+  }

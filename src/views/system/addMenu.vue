@@ -4,7 +4,7 @@
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="菜单名称1" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter()">
-        查询A
+        查询
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate()">
         添加
@@ -64,7 +64,179 @@
       <el-button @click="dialogFormVisible = false">关闭</el-button>
       <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
     </div>
+
+    <!-- 新增
+    <el-drawer
+      ref="drawer"
+      :before-close="handleClose"
+      :visible.sync="dialog"
+      :show-close="false"
+      size="60%"
+      :with-header="false"
+      direction="rtl"
+    >
+      <div class="drawer-head"><label>添加菜单</label><span class="drawer-head-span" /></div>
+      <el-tabs v-model="activeName" :stretch="true" @tab-click="handleClick">
+        <el-tab-pane label="用户管理" class="drawer-tab-pane" name="first">
+          <div class="drawer-body">
+            <el-form class="drawer-form-content" :model="form" label-width="80px">
+              <div class="drawer-form-title"><label>用户管理</label></div>
+              <el-form-item label="活动名称">
+                <el-input v-model="form.name" />
+              </el-form-item>
+              <el-form-item label="活动区域">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai" />
+                  <el-option label="区域二" value="beijing" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="活动时间">
+                <el-col :span="11">
+                  <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;" />
+                </el-col>
+                <el-col class="line" :span="2">-</el-col>
+                <el-col :span="11">
+                  <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;" />
+                </el-col>
+              </el-form-item>
+              <el-form-item label="即时配送">
+                <el-switch v-model="form.delivery" />
+              </el-form-item>
+              <el-form-item label="活动性质">
+                <el-checkbox-group v-model="form.type">
+                  <el-checkbox label="美食/餐厅线上活动" name="type" />
+                  <el-checkbox label="地推活动" name="type" />
+                  <el-checkbox label="线下主题活动" name="type" />
+                  <el-checkbox label="单纯品牌曝光" name="type" />
+                </el-checkbox-group>
+              </el-form-item>
+              <el-form-item label="特殊资源">
+                <el-radio-group v-model="form.resource">
+                  <el-radio label="线上品牌商赞助" />
+                  <el-radio label="线下场地免费" />
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="活动形式">
+                <el-input v-model="form.desc" type="textarea" />
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="配置管理" name="second">
+          <div class="drawer-body">
+            <el-form class="drawer-form-content" :model="form">
+              <div class="drawer-form-title"><label>配置管理</label></div>
+              <el-row :gutter="30">
+                <el-col :span="12">
+
+                  <el-form-item class="is-required" label="活动名称">
+                    <el-input v-model="form.name" autocomplete="off" />
+                  </el-form-item>
+                  <el-form-item label="活动区域">
+                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                      <el-option label="区域一" value="shanghai" />
+                      <el-option label="区域二" value="beijing" />
+                    </el-select>
+                  </el-form-item>
+
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item class="is-required" label="活动名称">
+                    <el-input v-model="form.name" autocomplete="off" />
+                  </el-form-item>
+                  <el-form-item label="活动区域">
+                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                      <el-option label="区域一" value="shanghai" />
+                      <el-option label="区域二" value="beijing" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </div></el-tab-pane>
+        <el-tab-pane label="角色管理" name="third">
+          <div class="drawer-body">
+            <el-form class="drawer-form-content" :model="form">
+              <div class="drawer-form-title"><label>角色管理</label></div>
+              <el-row :gutter="30">
+                <el-col :span="12">
+
+                  <el-form-item class="is-required" label="活动名称">
+                    <el-input v-model="form.name" autocomplete="off" />
+                  </el-form-item>
+                  <el-form-item label="活动区域">
+                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                      <el-option label="区域一" value="shanghai" />
+                      <el-option label="区域二" value="beijing" />
+                    </el-select>
+                  </el-form-item>
+
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item class="is-required" label="活动名称">
+                    <el-input v-model="form.name" autocomplete="off" />
+                  </el-form-item>
+                  <el-form-item label="活动区域">
+                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                      <el-option label="区域一" value="shanghai" />
+                      <el-option label="区域二" value="beijing" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <div class="drawer-form-title"><label>角色管理</label></div>
+              <el-form-item class="is-required" label="活动名称">
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item label="活动区域">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai" />
+                  <el-option label="区域二" value="beijing" />
+                </el-select>
+              </el-form-item>
+              <div class="drawer-form-title"><label>角色管理</label></div>
+              <el-form-item class="is-required" label="活动名称">
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item label="活动区域">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai" />
+                  <el-option label="区域二" value="beijing" />
+                </el-select>
+              </el-form-item>
+              <div class="drawer-form-title"><label>角色管理</label></div>
+              <el-form-item class="is-required" label="活动名称">
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item label="活动区域">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai" />
+                  <el-option label="区域二" value="beijing" />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div></el-tab-pane>
+      </el-tabs>
+
+      <div class="drawer-foot">
+        <el-row :gutter="20">
+          <el-col :span="5"><span>&nbsp;</span></el-col>
+          <el-col :span="5">
+            <el-button type="primary" icon="el-icon-edit" :loading="listLoading" @click="$refs.drawer.closeDrawer()">{{ listLoading ? '提交中 ...' : '保 存' }}</el-button>
+          </el-col>
+          <el-col :span="5">
+            <el-button type="danger" icon="el-icon-delete" :disabled="true" @click="cancelForm">删 除</el-button>
+          </el-col>
+          <el-col :span="5">
+            <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
+          </el-col>
+          <el-col :span="4"><span>&nbsp;</span></el-col>
+        </el-row>
+
+      </div>
+    </el-drawer>-->
   </div>
+
 </template>
 <script>
 import { menuList, menuChildList } from '@/api/system'
@@ -369,6 +541,9 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+
+    @import "~@/styles/oneself.scss";
 
 </style>
+
