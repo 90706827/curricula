@@ -80,8 +80,7 @@ export const asyncRoutes = [
     alwaysShow: true,
     meta: {
       title: 'Permission',
-      icon: 'lock',
-      roles: ['admin', 'editor']
+      icon: 'lock'
     },
     children: [
       {
@@ -89,8 +88,7 @@ export const asyncRoutes = [
         component: 'views/permission/page',
         name: 'PagePermission',
         meta: {
-          title: 'Page Permission',
-          roles: ['admin']
+          title: 'Page Permission'
         }
       },
       {
@@ -106,8 +104,7 @@ export const asyncRoutes = [
         component: 'views/permission/role',
         name: 'RolePermission',
         meta: {
-          title: 'Role Permission',
-          roles: ['admin']
+          title: 'Role Permission'
         }
       }
     ]

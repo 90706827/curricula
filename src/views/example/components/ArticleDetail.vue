@@ -64,7 +64,7 @@
         </el-form-item>
 
         <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="postForm.content" :height="400" />
+          <Tinymce ref="visitor" v-model="postForm.content" :height="400" />
         </el-form-item>
 
         <el-form-item prop="image_uri" style="margin-bottom: 30px;">

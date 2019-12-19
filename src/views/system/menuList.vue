@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 查询条件 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="菜单名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.title" placeholder="菜单名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter(0)" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(0)">查 询</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-document-add" @click="addMenu()">新 增</el-button>
     </div>
@@ -16,6 +16,7 @@
       border=""
       :stripe="true"
       :tree-props="{ children:'children', hasChildren: 'hasChildren'}"
+      @row-click="editMenu"
     >
       <el-table-column
         fixed
@@ -98,11 +99,9 @@
         label="描述"
         width="250"
       />
-      <el-table-column fixed="right" align="center" width="140" label="操作" class-name="small-padding fixed-width">
+      <el-table-column fixed="right" align="center" width="100" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button-group>
-            <el-button type="primary" effect="dark" size="small" @click="handleCreate(row)">编辑</el-button>
-          </el-button-group>
+          <el-button type="primary" effect="dark" size="small" @click="editMenu(row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -126,13 +125,14 @@
     >
       <div class="drawer-head"><label>添加菜单</label><span class="drawer-head-span" /></div>
       <div class="drawer-body">
-        <el-form class="drawer-form-content" :rules="rules" :model="temp" label-width="80px">
+        <el-form ref="dataForm" class="drawer-form-content" :rules="rules" :model="temp" label-width="80px">
           <div class="drawer-form-title"><label>菜单信息</label></div>
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="父类菜单" label-width="100px" prop="parentId">
                 <el-cascader
                   v-model="temp.parentId"
+                  placeholder="选择所属父类菜单"
                   :multiple="false"
                   :options="selectMenu"
                   :props="{ checkStrictly: true,expandTrigger:'hover',emitPath:false}"
@@ -141,21 +141,32 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单路径" label-width="100px" prop="path">
-                <el-input v-model="temp.path" />
+              <el-form-item class="is-required" label="菜单图标" label-width="100px" prop="icon">
+                <el-input
+                  v-model="temp.icon"
+                  placeholder="填写菜单图标"
+                />
               </el-form-item>
+              <svg-icon :icon-class="temp.icon" />
+              <i :class="temp.icon" />
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item class="is-required" label="菜单名称" label-width="100px" prop="title">
-                <el-input v-model="temp.title" />
+                <el-input
+                  v-model="temp.title"
+                  placeholder="填写菜单名称"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单图标" label-width="100px" prop="icon">
-                <el-input v-model="temp.icon" />
+              <el-form-item class="is-required" label="菜单路径" label-width="100px" prop="path">
+                <el-input
+                  v-model="temp.path"
+                  placeholder="填写菜单路径"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -163,12 +174,18 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item class="is-required" label="菜单标识" label-width="100px" prop="name">
-                <el-input v-model="temp.name" />
+                <el-input
+                  v-model="temp.name"
+                  placeholder="填写菜单标识"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item class="is-required" label="菜单视图" label-width="100px" prop="component">
-                <el-input v-model="temp.component" />
+                <el-input
+                  v-model="temp.component"
+                  placeholder="填写菜单视图"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -176,19 +193,25 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="重定路径" label-width="100px" prop="redirect">
-                <el-input v-model="temp.redirect" />
+                <el-input
+                  v-model="temp.redirect"
+                  placeholder="填写重定向路径"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="菜单排序" label-width="100px" prop="sort">
-                <el-input v-model="temp.sort" />
+                <el-input
+                  v-model="temp.sort"
+                  placeholder="填写菜单排序"
+                />
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="菜单隐藏" label-width="100px" prop="name">
+              <el-form-item label="菜单隐藏" label-width="100px" prop="hidden">
                 <el-switch
                   v-model="temp.hidden"
                   active-value="false"
@@ -210,11 +233,17 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="备注" label-width="100px" prop="description">
-                <el-input v-model="temp.description" />
+                <el-input
+                  v-model="temp.description"
+                  placeholder="填写备注信息"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-input v-model="temp.menuId" />
+              <el-input
+                v-model="temp.menuId"
+                placeholder="菜单ID"
+              />
             </el-col>
           </el-row>
         </el-form>
@@ -224,10 +253,10 @@
         <el-row :gutter="20">
           <el-col :span="5"><span>&nbsp;</span></el-col>
           <el-col :span="5">
-            <el-button type="primary" icon="el-icon-edit" :loading="listLoading" @click="saveMenu()">{{ listLoading ? '提交中 ...' : '保 存' }}</el-button>
+            <el-button type="primary" icon="el-icon-edit" :loading="listLoading" @click="saveOrUpdateMenu()">保 存</el-button>
           </el-col>
           <el-col :span="5">
-            <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="cancelForm">删 除</el-button>
+            <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delMenu()">删 除</el-button>
           </el-col>
           <el-col :span="5">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
@@ -240,7 +269,7 @@
   </div>
 </template>
 <script>
-import { menuList, menuChildList } from '@/api/system'
+import { menuList, menuChildList, saveOrUpdateMenu, deleteMenu } from '@/api/system'
 import { selectMenu } from '@/api/common'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -267,19 +296,22 @@ export default {
         path: '',
         redirect: '',
         component: '',
-        hidden: '',
+        hidden: 'false',
         name: '',
         title: '',
         icon: '',
         sort: '',
         description: '',
-        status: ''
+        status: '1'
       },
       dialogStatus: '',
       dialogFormVisible: false,
       rules: {
-        title: [{ required: true, message: '显示标题', trigger: 'blur' }],
-        path: [{ required: true, message: '请求路径', trigger: 'blur' }]
+        title: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
+        path: [{ required: true, message: '请填写菜单路径', trigger: 'blur' }],
+        icon: [{ required: true, message: '请填写菜单图标', trigger: 'blur' }],
+        name: [{ required: true, message: '请填写菜单标识', trigger: 'blur' }],
+        component: [{ required: true, message: '请填写菜单视图', trigger: 'blur' }]
       },
       form: {
         name: '',
@@ -294,7 +326,8 @@ export default {
       formLabelWidth: '80px',
       activeName: 'first',
       disabled: true,
-      selectMenu: []
+      selectMenu: [],
+      isNewEdit: true
     }
   },
   created() {
@@ -306,9 +339,7 @@ export default {
       new Promise((resolve, reject) => {
         menuList(this.listQuery).then(response => {
           this.list = response.data.content
-          console.log('list', this.list)
           this.total = response.data.total
-          console.log('total', this.total)
           this.listQuery.page = response.data.page
           this.listQuery.size = response.data.size
           resolve()
@@ -350,61 +381,111 @@ export default {
       }
     },
     addMenu() {
+      if (this.isNewEdit === false) {
+        this.isNewEdit = true
+        this.resetTemp()
+      }
       this.loadSelectMenu()
       this.dialog = true
+      this.disabled = true
     },
-    saveMenu() {
-      // $refs.drawer.closeDrawer()
+    saveOrUpdateMenu(done) {
       console.log('save', this.temp)
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          if (this.listLoading) {
+            return
+          }
+          this.$confirm('确定要提交表单吗？')
+            .then(_ => {
+              this.listLoading = true
+              this.timer = setTimeout(() => {
+                saveOrUpdateMenu(this.temp).then(resp => {
+                  if (resp.code === 200) {
+                    this.$refs.drawer.handleClose()
+                    this.resetTemp()
+                    this.dialogFormVisible = false
+                    this.getList()
+                  }
+                  this.$message({
+                    message: resp.code === 200 ? '保存成功！' : '保存失败！',
+                    type: resp.code === 200 ? 'success' : 'error'
+                  })
+                })
+                // 动画关闭需要一定的时间
+                setTimeout(() => {
+                  this.listLoading = false
+                }, 1000)
+              }, 2000)
+            })
+            .catch(_ => {})
+        }
+      })
     },
     loadSelectMenu() {
       selectMenu().then(resp => {
-        console.log('selectMenu:', resp.data)
-
         this.selectMenu = resp.data
       })
     },
-    handleCreate(row) {
+    editMenu(row, event, column) {
       console.log('row', row)
-      // this.$router.push({ path: '/system/menu/addMenu' })
-      // this.loadSelectMenu()
-      // this.resetTemp()
-      // this.dialogStatus = 'create'
-      // this.dialogFormVisible = true
-      // this.$nextTick(() => {
-      //   this.$refs['dataForm'].clearValidate()
-      // })
-    },
-    handleUpdate() {
+      this.isNewEdit = false
+      this.temp.menuId = row.menuId
+      this.temp.parentId = row.parentId
+      this.temp.path = row.path
+      this.temp.redirect = row.redirect
+      this.temp.component = row.component
+      this.temp.hidden = row.hidden
+      this.temp.name = row.name
+      this.temp.title = row.title
+      this.temp.icon = row.icon
+      this.temp.sort = row.sort
+      this.temp.description = row.description
+      this.temp.status = row.status
 
-    },
-    handleDelete() {
-
-    },
-    handleClose(done) {
-      if (this.listLoading) {
-        return
+      this.loadSelectMenu()
+      this.dialog = true
+      if (row.children) {
+        console.log('disabled')
+        this.disabled = true
+      } else {
+        this.disabled = false
       }
+    },
+    delMenu() {
       this.$confirm('确定要提交表单吗？')
         .then(_ => {
           this.listLoading = true
           this.timer = setTimeout(() => {
-            done()
-            // 动画关闭需要一定的时间
+            deleteMenu(this.temp).then(resp => {
+              if (resp.code === 200) {
+                this.$refs.drawer.handleClose()
+                this.resetTemp()
+                this.dialogFormVisible = false
+                this.getList()
+              }
+              this.$message({
+                message: resp.code === 200 ? '删除成功！' : '删除失败！',
+                type: resp.code === 200 ? 'success' : 'error'
+              })
+            })
             setTimeout(() => {
               this.listLoading = false
-            }, 100)
-          }, 1000)
+            }, 1000)
+          }, 2000)
         })
         .catch(_ => {})
     },
-    handleClick() {
-
+    handleClose(done) {
+      done()
     },
     cancelForm() {
-      this.listLoading = false
-      this.dialog = false
-      clearTimeout(this.timer)
+      this.$confirm('确定要关闭吗？')
+        .then(_ => {
+          this.resetTemp()
+          this.listLoading = false
+          this.dialog = false
+        })
     }
   }
 }

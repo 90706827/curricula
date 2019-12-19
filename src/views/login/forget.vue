@@ -8,58 +8,32 @@
       auto-complete="on"
       label-position="left"
     >
+      <el-row>
+        <div class="title-container">
+          <h3 class="title">找回密码</h3>
+        </div>
+      </el-row>
+      <el-row class="title-container">
+        <el-col>
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="请输入手机号码"
+              name="username"
+              type="text"
+              tabindex="1"
+              auto-complete="on"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-      <div class="title-container">
-        <h3 class="title">找回密码</h3>
-      </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
-            auto-complete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
-          />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
-        </el-form-item>
-      </el-tooltip>
-
-      <input
-        ref="key"
-        v-model="loginForm.key"
-        name="key"
-        type="hidden"
-      >
-      <el-row :gutter="10">
-        <el-col :span="4" style="width: 60%">
+      <el-row :gutter="5">
+        <el-col :span="14">
           <el-form-item prop="verCode">
             <span class="svg-container">
               <i class="el-icon-key" />
@@ -67,60 +41,103 @@
             <el-input
               ref="verCode"
               v-model="loginForm.verCode"
+              style="width:70%"
+              maxlength="6"
               placeholder="验证码"
-              autocomplete="on"
               name="verCode"
-              tabindex="3"
               type="text"
             />
           </el-form-item>
         </el-col>
-        <el-col style="width:35%;" :span="4" :offset="1">
-          <el-image
-            style="width:100%; height: 50px;"
-            :src="verCodeImg"
-            @click="getVerCode"
-          /></el-col>
+        <el-col style="width:35%;height:70px;" :span="4" :offset="1">
+          <el-button
+            style="width:100%;margin-top:7px;"
+            type="primary"
+            :round="true"
+            :loading="loading"
+            @click="sendTelCode()"
+          >发送验证码{{ count }}</el-button>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+            <el-form-item prop="password">
+              <span class="svg-container">
+                <svg-icon icon-class="password" />
+              </span>
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                :type="passwordType"
+                placeholder="输入密码"
+                name="password"
+                tabindex="2"
+                auto-complete="on"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+              </span>
+            </el-form-item>
+          </el-tooltip>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+            <el-form-item prop="rePassword">
+              <span class="svg-container">
+                <svg-icon icon-class="password" />
+              </span>
+              <el-input
+                :key="passwordType"
+                ref="rePassword"
+                v-model="loginForm.rePassword"
+                :type="passwordType"
+                placeholder="重复输入密码"
+                name="rePassword"
+                tabindex="2"
+                auto-complete="on"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+              </span>
+            </el-form-item>
+          </el-tooltip>
+        </el-col>
       </el-row>
       <el-row>
         <el-col>
           <el-button
-            :loading="loading"
+            :loading="saveLoading"
             style="width:100%;margin-bottom:30px;"
             type="primary"
-            @click.native.prevent="handleLogin"
-          >登录</el-button>
+            @click.native.prevent="forget"
+          >确  定</el-button>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
-          <el-link target="_blank" @click="forget">忘记密码？</el-link>
+          <el-link target="_blank" @click="login">返回登录</el-link>
         </el-col>
       </el-row>
     </el-form>
-    <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
-        </el-button>
-     <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-// import SocialSign from './components/SocialSignin'
 
 export default {
-  name: 'Login',
+  name: 'Forget',
   components: { },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      if (value.length < 5) {
         callback(new Error('请输入用户名！'))
       } else {
         callback()
@@ -129,6 +146,15 @@ export default {
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('请输入密码！'))
+      } else {
+        callback()
+      }
+    }
+    const validateRsPassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('请再次输入密码！'))
+      } else if (value !== this.loginForm.password) {
+        callback(new Error('两次密码不一致！'))
       } else {
         callback()
       }
@@ -142,52 +168,43 @@ export default {
     }
     return {
       loginForm: {
-        username: 'zhangsan',
-        password: '111111',
-        key: '',
+        username: '',
+        password: '',
+        rePassword: '',
         verCode: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        rePassword: [{ required: true, trigger: 'blur', validator: validateRsPassword }],
         verCode: [{ required: true, trigger: 'blur', validator: validateVerCode }]
       },
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
+      verCodeLoading: false,
       showDialog: false,
       redirect: undefined,
       otherQuery: {},
-      verCodeImg: ''
-    }
-  },
-  watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query
-        if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
-        }
-      },
-      immediate: true
+      saveLoading: false,
+      disabled: false,
+      count: ''
     }
   },
   created() {
-    // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
     } else if (this.loginForm.verCode === '') {
       this.$refs.verCode.focus()
+    } else if (this.loginForm.password === '') {
+      this.$refs.password.focus()
+    } else if (this.loginForm.rePassword === '') {
+      this.$refs.rePassword.focus()
     }
-    this.getVerCode()
   },
   destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
     checkCapslock({ shiftKey, key } = {}) {
@@ -212,17 +229,22 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
+    forget() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
+          this.saveLoading = true
+          this.$store.dispatch('user/forget', this.loginForm)
+            .then((resp) => {
+              this.$message({
+                message: resp.code === 200 ? '修改密码成功！' : '修改密码失败！',
+                type: resp.code === 200 ? 'success' : 'error'
+              })
+              if (resp.code === 200) {
+                setTimeout(() => {
+                  this.saveLoading = false
+                  this.$router.push({ path: 'login' })
+                }, 2000)
+              }
             })
         } else {
           console.log('error submit!!')
@@ -230,54 +252,40 @@ export default {
         }
       })
     },
-    getOtherQuery(query) {
-      return Object.keys(query).reduce((acc, cur) => {
-        if (cur !== 'redirect') {
-          acc[cur] = query[cur]
-        }
-        return acc
-      }, {})
-    },
-    forget() {
+    login() {
       this.$router.push({
-        path: 'forget' })
+        path: 'login' })
     },
-    getVerCode() {
+    sendTelCode() {
       this.$store
-        .dispatch('user/verCode')
+        .dispatch('user/sendTelCode', this.loginForm.username)
         .then(response => {
-          this.loginForm.key = response.key
-          this.verCodeImg = response.verCode
+          console.log('sendTelCode', response)
+          if (response.code === 200) {
+            var i = 1
+            var timer = setInterval(() => {
+              this.count = '(' + i + ')'
+              i++
+              console.log('clearInterval:', this.count)
+            }, 1000)
+            this.loading = true
+            setTimeout(() => {
+              clearInterval(timer)
+              this.loading = false
+              this.count = ''
+              console.log('clearInterval:', this.disabled)
+            }, 5000)
+          }
         })
         .catch(e => {
           console.error(e)
         })
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
 $light_gray:#fff;
@@ -289,7 +297,6 @@ $cursor: #fff;
   }
 }
 
-/* reset element-ui css */
 .login-container {
   .el-input {
     display: inline-block;
@@ -326,7 +333,6 @@ $cursor: #fff;
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
 $light_gray:#eee;
-
 .login-container {
   min-height: 100%;
   width: 100%;
@@ -364,7 +370,7 @@ $light_gray:#eee;
 
   .title-container {
     position: relative;
-
+    padding-bottom: 40px;
     .title {
       font-size: 26px;
       color: $light_gray;
@@ -391,13 +397,14 @@ $light_gray:#eee;
   }
  .el-row {
     margin-bottom: 20px;
-    height: 30px;
+    height: 50px;
     &:last-child {
       margin-bottom: 0;
     }
   }
   .el-col {
     border-radius: 4px;
+    height: 75px;
   }
   @media only screen and (max-width: 470px) {
     .thirdparty-button {

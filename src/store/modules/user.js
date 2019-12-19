@@ -1,4 +1,4 @@
-import { login, logout, getInfo, verCode } from '@/api/index'
+import { login, logout, getInfo, verCode, sendTelCode, forget } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256
@@ -34,6 +34,9 @@ const mutations = {
   },
   SET_ROUTERS: (state, routers) => {
     state.routers = routers
+  },
+  SET_SCHOOL: (state, school) => {
+    state.school = school
   }
 }
 
@@ -116,6 +119,29 @@ const actions = {
           data
         } = response
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 发送手机验证码
+  sendTelCode({ commit }, username) {
+    return new Promise((resolve, reject) => {
+      sendTelCode({ username: username }).then((response) => {
+        resolve(response)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 修改密码
+  forget({ commit }, query) {
+    return new Promise((resolve, reject) => {
+      forget({
+        username: query.username.trim(),
+        password: sha256(query.password.trim()),
+        verCode: query.verCode.trim() }).then((response) => {
+        resolve(response)
       }).catch(error => {
         reject(error)
       })

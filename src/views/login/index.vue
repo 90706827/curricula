@@ -68,16 +68,15 @@
               ref="verCode"
               v-model="loginForm.verCode"
               placeholder="验证码"
-              autocomplete="on"
+              style="width:70%"
               name="verCode"
-              tabindex="3"
               type="text"
             />
           </el-form-item>
         </el-col>
         <el-col style="width:35%;" :span="4" :offset="1">
           <el-image
-            style="width:100%; height: 50px;"
+            style="width:100%; height: 47px;padding-top: 2px"
             :src="verCodeImg"
             @click="getVerCode"
           /></el-col>
@@ -370,7 +369,7 @@ $light_gray:#eee;
     color: $dark_gray;
     vertical-align: middle;
     width: 30px;
-    display: inline-block;
+    // display: inline-block;
   }
 
   .title-container {

@@ -29,3 +29,19 @@ export function verCode() {
     method: 'post'
   })
 }
+
+export function sendTelCode(data) {
+  return request({
+    url: '/sendTelCode',
+    method: 'post',
+    data
+  })
+}
+
+export function forget(data) {
+  return request({
+    url: '/forget',
+    method: 'post',
+    data
+  })
+}

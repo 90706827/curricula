@@ -34,26 +34,18 @@ export function menuChildList(data) {
   })
 }
 
-export function menuSave(data) {
+export function saveOrUpdateMenu(data) {
   return request({
-    url: '/admin/menu/save',
+    url: '/system/saveOrUpdateMenu',
     method: 'post',
     data
   })
 }
 
-export function menuUpdate(data) {
-  return request({
-    url: '/admin/menu/update',
-    method: 'post',
-    data
-  })
-}
-
-export function menuRemove(query) {
+export function deleteMenu(query) {
   const data = param(query)
   return request({
-    url: '/admin/menu/delete',
+    url: '/system/deleteMenu',
     method: 'post',
     data
   })
