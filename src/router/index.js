@@ -61,6 +61,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/register',
+    component: () => import('@/views/login/register'),
+    hidden: true
+  },
+  {
     path: '/auth-redirect',
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
@@ -116,6 +121,19 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
+
+    path: '/form',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/form/index'),
+        name: 'Form',
+        meta: { title: '表单校验', icon: 'table' }
+      }
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',
@@ -140,7 +158,7 @@ export const asyncRoutes = [
         name: 'DirectivePermission',
         meta: {
           title: '命令许可'
-          // if do not set roles, means: this page does not require permission
+        // if do not set roles, means: this page does not require permission
         }
       },
       {

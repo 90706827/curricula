@@ -1,4 +1,4 @@
-import { login, logout, getInfo, verCode, sendTelCode, forget } from '@/api/index'
+import { login, logout, getInfo, verCode, sendTelCode, forget, register } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256
@@ -125,9 +125,9 @@ const actions = {
     })
   },
   // 发送手机验证码
-  sendTelCode({ commit }, username) {
+  sendTelCode({ commit }, { phone, type }) {
     return new Promise((resolve, reject) => {
-      sendTelCode({ username: username }).then((response) => {
+      sendTelCode({ phone: phone, type: type }).then((response) => {
         resolve(response)
       }).catch(error => {
         reject(error)
@@ -138,7 +138,20 @@ const actions = {
   forget({ commit }, query) {
     return new Promise((resolve, reject) => {
       forget({
-        username: query.username.trim(),
+        phone: query.phone.trim(),
+        password: sha256(query.password.trim()),
+        verCode: query.verCode.trim() }).then((response) => {
+        resolve(response)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 用户注册
+  register({ commit }, query) {
+    return new Promise((resolve, reject) => {
+      register({
+        phone: query.phone.trim(),
         password: sha256(query.password.trim()),
         verCode: query.verCode.trim() }).then((response) => {
         resolve(response)

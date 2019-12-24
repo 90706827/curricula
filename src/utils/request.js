@@ -46,7 +46,6 @@ service.interceptors.response.use(
       } else if (resp.code >= 700 && resp.code <= 750) {
         // 有页面自行处理错误
         console.log('放行返回码：', resp.code, resp.message)
-        return resp
       } else {
         Message({
           message: resp.message || 'Error',
@@ -54,6 +53,7 @@ service.interceptors.response.use(
           duration: 5 * 1000
         })
       }
+      return resp
     } else {
       return resp
     }

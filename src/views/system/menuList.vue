@@ -99,11 +99,6 @@
         label="描述"
         width="250"
       />
-      <el-table-column fixed="right" align="center" width="100" label="操作" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" effect="dark" size="small" @click="editMenu(row)">编辑</el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <!-- 分页 -->
     <pagination
@@ -141,20 +136,21 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单图标" label-width="100px" prop="icon">
+              <el-form-item label="菜单图标" label-width="100px" prop="icon">
+
+                <el-button type="primary" :icon="temp.icon" @click="vcloak()">选择图标</el-button>
                 <el-input
                   v-model="temp.icon"
+                  :hidden="true"
                   placeholder="填写菜单图标"
                 />
               </el-form-item>
-              <svg-icon :icon-class="temp.icon" />
-              <i :class="temp.icon" />
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单名称" label-width="100px" prop="title">
+              <el-form-item label="菜单名称" label-width="100px" prop="title">
                 <el-input
                   v-model="temp.title"
                   placeholder="填写菜单名称"
@@ -162,7 +158,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单路径" label-width="100px" prop="path">
+              <el-form-item label="菜单路径" label-width="100px" prop="path">
                 <el-input
                   v-model="temp.path"
                   placeholder="填写菜单路径"
@@ -173,7 +169,7 @@
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单标识" label-width="100px" prop="name">
+              <el-form-item label="菜单标识" label-width="100px" prop="name">
                 <el-input
                   v-model="temp.name"
                   placeholder="填写菜单标识"
@@ -181,7 +177,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item class="is-required" label="菜单视图" label-width="100px" prop="component">
+              <el-form-item label="菜单视图" label-width="100px" prop="component">
                 <el-input
                   v-model="temp.component"
                   placeholder="填写菜单视图"
@@ -203,6 +199,7 @@
               <el-form-item label="菜单排序" label-width="100px" prop="sort">
                 <el-input
                   v-model="temp.sort"
+                  type="number"
                   placeholder="填写菜单排序"
                 />
               </el-form-item>
@@ -253,7 +250,7 @@
         <el-row :gutter="20">
           <el-col :span="5"><span>&nbsp;</span></el-col>
           <el-col :span="5">
-            <el-button type="primary" icon="el-icon-edit" :loading="listLoading" @click="saveOrUpdateMenu()">保 存</el-button>
+            <el-button type="primary" icon="el-icon-edit" :loading="loading" @click="saveOrUpdateMenu()">保 存</el-button>
           </el-col>
           <el-col :span="5">
             <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delMenu()">删 除</el-button>
@@ -336,17 +333,17 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      new Promise((resolve, reject) => {
-        menuList(this.listQuery).then(response => {
-          this.list = response.data.content
-          this.total = response.data.total
-          this.listQuery.page = response.data.page
-          this.listQuery.size = response.data.size
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+      // new Promise((resolve, reject) => {
+      menuList(this.listQuery).then(response => {
+        this.list = response.data.content
+        this.total = response.data.total
+        this.listQuery.page = response.data.page
+        this.listQuery.size = response.data.size
+        // resolve()
+      }).catch(() => {
+        // reject(error)
       })
+      // })
       this.listLoading = false
     },
     load(tree, treeNode, resolve) {
@@ -393,14 +390,15 @@ export default {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (this.listLoading) {
+          if (this.loading) {
             return
           }
           this.$confirm('确定要提交表单吗？')
             .then(_ => {
-              this.listLoading = true
+              this.loading = true
               this.timer = setTimeout(() => {
                 saveOrUpdateMenu(this.temp).then(resp => {
+                  console.log('saveOrUpdateMenur', resp)
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
@@ -408,15 +406,15 @@ export default {
                     this.getList()
                   }
                   this.$message({
-                    message: resp.code === 200 ? '保存成功！' : '保存失败！',
+                    message: resp.code === 200 ? '保存成功！' : resp.message,
                     type: resp.code === 200 ? 'success' : 'error'
                   })
                 })
                 // 动画关闭需要一定的时间
                 setTimeout(() => {
-                  this.listLoading = false
+                  this.loading = false
                 }, 1000)
-              }, 2000)
+              }, 1000)
             })
             .catch(_ => {})
         }
@@ -457,7 +455,7 @@ export default {
         .then(_ => {
           this.listLoading = true
           this.timer = setTimeout(() => {
-            deleteMenu(this.temp).then(resp => {
+            deleteMenu({ menuId: this.temp.menuId, parentId: this.temp.parentId }).then(resp => {
               if (resp.code === 200) {
                 this.$refs.drawer.handleClose()
                 this.resetTemp()
@@ -483,7 +481,7 @@ export default {
       this.$confirm('确定要关闭吗？')
         .then(_ => {
           this.resetTemp()
-          this.listLoading = false
+          // this.listLoading = false
           this.dialog = false
         })
     }

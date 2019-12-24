@@ -10,7 +10,7 @@
     >
       <el-row>
         <div class="title-container">
-          <h3 class="title">找回密码</h3>
+          <h3 class="title">用户注册</h3>
         </div>
       </el-row>
       <el-row>
@@ -107,7 +107,7 @@
 <script>
 
 export default {
-  name: 'Forget',
+  name: 'Register',
   components: { },
   data() {
     const validatePhone = (rule, value, callback) => {
@@ -181,11 +181,11 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.saveLoading = true
-          this.$store.dispatch('user/forget', this.loginForm)
+          this.$store.dispatch('user/register', this.loginForm)
             .then((resp) => {
               if (resp.code === 200) {
                 this.$message({
-                  message: '修改密码成功！',
+                  message: '用户注册成功！',
                   type: 'success'
                 })
                 this.$router.push({ path: 'login' })
@@ -205,12 +205,10 @@ export default {
         path: 'login' })
     },
     sendTelCode() {
-      // var phoneFlag = this.$refs.loginForm.validateField('phone')
-      // console.log(this.$refs.loginForm.validateField('phone').va)
       this.$refs.loginForm.validateField('phone', error => {
         if (error === '') {
           this.$store
-            .dispatch('user/sendTelCode', { phone: this.loginForm.phone, type: 1 })
+            .dispatch('user/sendTelCode', { phone: this.loginForm.phone, type: '2' })
             .then(response => {
               if (response.code === 200) {
                 var i = 119

@@ -42,8 +42,7 @@ export function saveOrUpdateMenu(data) {
   })
 }
 
-export function deleteMenu(query) {
-  const data = param(query)
+export function deleteMenu(data) {
   return request({
     url: '/system/deleteMenu',
     method: 'post',
