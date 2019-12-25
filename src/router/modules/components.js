@@ -9,92 +9,106 @@ const componentsRouter = {
   name: 'ComponentDemo',
   meta: {
     title: '组件',
-    icon: 'component'
+    icon: 'el-icon-menu'
   },
   children: [
     {
       path: 'tinymce',
       component: () => import('@/views/components-demo/tinymce'),
       name: 'TinymceDemo',
-      meta: { title: '微型MCE' }
+      meta: { title: '微型MCE',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'markdown',
       component: () => import('@/views/components-demo/markdown'),
       name: 'MarkdownDemo',
-      meta: { title: 'Markdown' }
+      meta: { title: 'Markdown',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'json-editor',
       component: () => import('@/views/components-demo/json-editor'),
       name: 'JsonEditorDemo',
-      meta: { title: 'JSON编辑' }
+      meta: { title: 'JSON编辑',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'split-pane',
       component: () => import('@/views/components-demo/split-pane'),
       name: 'SplitpaneDemo',
-      meta: { title: '窗格偏移' }
+      meta: { title: '窗格偏移',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'avatar-upload',
       component: () => import('@/views/components-demo/avatar-upload'),
       name: 'AvatarUploadDemo',
-      meta: { title: '头像上传' }
+      meta: { title: '头像上传',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'dropzone',
       component: () => import('@/views/components-demo/dropzone'),
       name: 'DropzoneDemo',
-      meta: { title: '图片上传' }
+      meta: { title: '图片上传',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'sticky',
       component: () => import('@/views/components-demo/sticky'),
       name: 'StickyDemo',
-      meta: { title: '固定标题' }
+      meta: { title: '固定标题',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'count-to',
       component: () => import('@/views/components-demo/count-to'),
       name: 'CountToDemo',
-      meta: { title: '跑马计时' }
+      meta: { title: '跑马计时',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'mixin',
       component: () => import('@/views/components-demo/mixin'),
       name: 'ComponentMixinDemo',
-      meta: { title: '特效实例' }
+      meta: { title: '特效实例',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'back-to-top',
       component: () => import('@/views/components-demo/back-to-top'),
       name: 'BackToTopDemo',
-      meta: { title: '到达顶页' }
+      meta: { title: '到达顶页',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'drag-dialog',
       component: () => import('@/views/components-demo/drag-dialog'),
       name: 'DragDialogDemo',
-      meta: { title: '拖动表单' }
+      meta: { title: '拖动表单',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'drag-select',
       component: () => import('@/views/components-demo/drag-select'),
       name: 'DragSelectDemo',
-      meta: { title: '下拉多选' }
+      meta: { title: '下拉多选',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'dnd-list',
       component: () => import('@/views/components-demo/dnd-list'),
       name: 'DndListDemo',
-      meta: { title: 'Dnd List' }
+      meta: { title: 'Dnd List',
+        icon: 'el-icon-menu' }
     },
     {
       path: 'drag-kanban',
       component: () => import('@/views/components-demo/drag-kanban'),
       name: 'DragKanbanDemo',
-      meta: { title: '拖拽看板' }
+      meta: { title: '拖拽看板',
+        icon: 'el-icon-menu' }
     }
   ]
 }

@@ -9,7 +9,7 @@ const chartsRouter = {
   name: 'Charts',
   meta: {
     title: '图表',
-    icon: 'chart'
+    icon: 'el-icon-menu'
   },
   children: [
     {
@@ -17,21 +17,21 @@ const chartsRouter = {
       component: () => import('@/views/charts/keyboard'),
       name: 'KeyboardChart',
       meta: { title: '键盘', noCache: true,
-        icon: 'chart' }
+        icon: 'el-icon-menu' }
     },
     {
       path: 'line',
       component: () => import('@/views/charts/line'),
       name: 'LineChart',
       meta: { title: '曲线', noCache: true,
-        icon: 'chart' }
+        icon: 'el-icon-menu' }
     },
     {
       path: 'mix-chart',
       component: () => import('@/views/charts/mix-chart'),
       name: 'MixChart',
       meta: { title: '柱状', noCache: true,
-        icon: 'chart' }
+        icon: 'el-icon-menu' }
     }
   ]
 }

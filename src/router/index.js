@@ -95,7 +95,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'el-icon-menu', affix: true }
       }
     ]
   },
@@ -109,7 +109,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: '简介', icon: 'user', noCache: true }
+        meta: { title: '简介', icon: 'el-icon-menu', noCache: true }
       }
     ]
   }
@@ -129,7 +129,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/form/index'),
         name: 'Form',
-        meta: { title: '表单校验', icon: 'table' }
+        meta: { title: '表单校验', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -141,7 +141,7 @@ export const asyncRoutes = [
     name: 'Permission',
     meta: {
       title: '权限许可',
-      icon: 'lock'
+      icon: 'el-icon-menu'
     },
     children: [
       {
@@ -149,7 +149,8 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/page'),
         name: 'PagePermission',
         meta: {
-          title: '页面许可'
+          title: '页面许可',
+          icon: 'el-icon-menu'
         }
       },
       {
@@ -157,7 +158,8 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/directive'),
         name: 'DirectivePermission',
         meta: {
-          title: '命令许可'
+          title: '命令许可',
+          icon: 'el-icon-menu'
         // if do not set roles, means: this page does not require permission
         }
       },
@@ -166,7 +168,8 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
-          title: '角色许可'
+          title: '角色许可',
+          icon: 'el-icon-menu'
         }
       }
     ]
@@ -180,7 +183,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: '文档', icon: 'documentation' }
+        meta: { title: '文档', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -193,7 +196,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/guide/index'),
         name: 'Guide',
-        meta: { title: '手册指南', icon: 'guide', noCache: true }
+        meta: { title: '手册指南', icon: 'el-icon-menu', noCache: true }
       }
     ]
   },
@@ -205,7 +208,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/icons/index'),
         name: 'Icons',
-        meta: { title: '图标', icon: 'icon', noCache: true }
+        meta: { title: '图标', icon: 'el-icon-menu', noCache: true }
       }
     ]
   },
@@ -223,27 +226,38 @@ export const asyncRoutes = [
     name: 'Example',
     meta: {
       title: '实例',
-      icon: 'example'
+      icon: 'el-icon-menu'
     },
     children: [
       {
         path: 'create',
         component: () => import('@/views/example/create'),
         name: 'CreateArticle',
-        meta: { title: '新建文章', icon: 'edit' }
+        meta: {
+          title: '新建文章',
+          icon: 'el-icon-menu'
+        }
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/example/edit'),
         name: 'EditArticle',
-        meta: { title: '编辑文章', noCache: true, activeMenu: '/example/list' },
+        meta: {
+          title: '编辑文章',
+          noCache: true,
+          icon: 'el-icon-menu',
+          activeMenu: '/example/list'
+        },
         hidden: true
       },
       {
         path: 'list',
         component: () => import('@/views/example/list'),
         name: 'ArticleList',
-        meta: { title: '文章列表', icon: 'list' }
+        meta: {
+          title: '文章列表',
+          icon: 'el-icon-menu'
+        }
       }
     ]
   },
@@ -256,7 +270,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/tab/index'),
         name: 'Tab',
-        meta: { title: '标签', icon: 'tab' }
+        meta: { title: '标签', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -268,7 +282,7 @@ export const asyncRoutes = [
     name: 'ErrorPages',
     meta: {
       title: '错误页面',
-      icon: '404'
+      icon: 'el-icon-menu'
     },
     children: [
       {
@@ -294,7 +308,7 @@ export const asyncRoutes = [
         path: 'log',
         component: () => import('@/views/error-log/index'),
         name: 'ErrorLog',
-        meta: { title: '错误日志', icon: 'bug' }
+        meta: { title: '错误日志', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -306,7 +320,7 @@ export const asyncRoutes = [
     name: 'Excel',
     meta: {
       title: '表格',
-      icon: 'excel'
+      icon: 'el-icon-menu'
     },
     children: [
       {
@@ -342,7 +356,7 @@ export const asyncRoutes = [
     redirect: '/zip/download',
     alwaysShow: true,
     name: 'Zip',
-    meta: { title: 'ZIP', icon: 'zip' },
+    meta: { title: 'ZIP', icon: 'el-icon-menu' },
     children: [
       {
         path: 'download',
@@ -362,7 +376,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/pdf/index'),
         name: 'PDF',
-        meta: { title: 'PDF', icon: 'pdf' }
+        meta: { title: 'PDF', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -380,7 +394,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/theme/index'),
         name: 'Theme',
-        meta: { title: '主题', icon: 'theme' }
+        meta: { title: '主题', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -393,7 +407,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/clipboard/index'),
         name: 'ClipboardDemo',
-        meta: { title: '剪贴板', icon: 'clipboard' }
+        meta: { title: '剪贴板', icon: 'el-icon-menu' }
       }
     ]
   },
@@ -404,7 +418,7 @@ export const asyncRoutes = [
     children: [
       {
         path: 'https://github.com/PanJiaChen/vue-element-admin',
-        meta: { title: '外部链接', icon: 'link' }
+        meta: { title: '外部链接', icon: 'el-icon-menu' }
       }
     ]
   },

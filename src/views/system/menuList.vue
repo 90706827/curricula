@@ -9,7 +9,6 @@
 
     <!-- 表格 -->
     <el-table
-      v-loading="listLoading"
       :data="list"
       style="width: 100%; height: 100%"
       row-key="menuId"
@@ -33,7 +32,6 @@
         width="60"
       >
         <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon" />
           <i :class="scope.row.icon" />
         </template>
       </el-table-column>
@@ -137,13 +135,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="菜单图标" label-width="100px" prop="icon">
-
-                <el-button type="primary" :icon="temp.icon" @click="vcloak()">选择图标</el-button>
-                <el-input
-                  v-model="temp.icon"
-                  :hidden="true"
-                  placeholder="填写菜单图标"
-                />
+                <el-button type="primary" :icon="temp.icon" @click="selectIcon()">选择图标</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -239,7 +231,11 @@
             <el-col :span="12">
               <el-input
                 v-model="temp.menuId"
-                placeholder="菜单ID"
+                type="hidden"
+              />
+              <el-input
+                v-model="temp.icon"
+                type="hidden"
               />
             </el-col>
           </el-row>
@@ -250,7 +246,7 @@
         <el-row :gutter="20">
           <el-col :span="5"><span>&nbsp;</span></el-col>
           <el-col :span="5">
-            <el-button type="primary" icon="el-icon-edit" :loading="loading" @click="saveOrUpdateMenu()">保 存</el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateMenu()">保 存</el-button>
           </el-col>
           <el-col :span="5">
             <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delMenu()">删 除</el-button>
@@ -262,6 +258,32 @@
         </el-row>
 
       </div>
+
+      <el-drawer
+        ref="innerDrawer"
+        :append-to-body="true"
+        :before-close="handleClose"
+        :visible.sync="innerDrawer"
+        :with-header="false"
+        :show-close="false"
+      >
+        <div class="drawer-head"><label>选择图标</label><span class="drawer-head-span" /></div>
+        <div class="drawer-body">
+          <div v-for="item of elementIcons" :key="item" @click="selectIconCode(item)">
+            <div class="icon-item">
+              <i :class="item" />
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-foot">
+          <el-row>
+            <el-col>
+              <el-button type="warning" icon="el-icon-close" @click="cancelIcon">关 闭</el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </el-drawer>
     </el-drawer>
   </div>
 </template>
@@ -270,6 +292,7 @@ import { menuList, menuChildList, saveOrUpdateMenu, deleteMenu } from '@/api/sys
 import { selectMenu } from '@/api/common'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
+import elementIcons from './element-icons'
 
 export default {
   name: 'MenuList',
@@ -279,7 +302,6 @@ export default {
     return {
       dialog: false,
       listLoading: false,
-      loading: false,
       listQuery: {
         title: '',
         page: 1,
@@ -296,7 +318,7 @@ export default {
         hidden: 'false',
         name: '',
         title: '',
-        icon: '',
+        icon: 'el-icon-tickets',
         sort: '',
         description: '',
         status: '1'
@@ -307,8 +329,7 @@ export default {
         title: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
         path: [{ required: true, message: '请填写菜单路径', trigger: 'blur' }],
         icon: [{ required: true, message: '请填写菜单图标', trigger: 'blur' }],
-        name: [{ required: true, message: '请填写菜单标识', trigger: 'blur' }],
-        component: [{ required: true, message: '请填写菜单视图', trigger: 'blur' }]
+        name: [{ required: true, message: '请填写菜单标识', trigger: 'blur' }]
       },
       form: {
         name: '',
@@ -324,7 +345,9 @@ export default {
       activeName: 'first',
       disabled: true,
       selectMenu: [],
-      isNewEdit: true
+      isNewEdit: true,
+      innerDrawer: false,
+      elementIcons
     }
   },
   created() {
@@ -332,19 +355,14 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true
-      // new Promise((resolve, reject) => {
+      this.openFullScreen()
       menuList(this.listQuery).then(response => {
         this.list = response.data.content
         this.total = response.data.total
         this.listQuery.page = response.data.page
         this.listQuery.size = response.data.size
-        // resolve()
-      }).catch(() => {
-        // reject(error)
       })
-      // })
-      this.listLoading = false
+      this.closeFullScreen()
     },
     load(tree, treeNode, resolve) {
       console.log('table:', tree.menuId, treeNode)
@@ -390,15 +408,14 @@ export default {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (this.loading) {
-            return
-          }
+          // if (this.loading) {
+          //   return
+          // }
           this.$confirm('确定要提交表单吗？')
             .then(_ => {
-              this.loading = true
+              this.openFullScreen()
               this.timer = setTimeout(() => {
                 saveOrUpdateMenu(this.temp).then(resp => {
-                  console.log('saveOrUpdateMenur', resp)
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
@@ -412,7 +429,7 @@ export default {
                 })
                 // 动画关闭需要一定的时间
                 setTimeout(() => {
-                  this.loading = false
+                  this.closeFullScreen()
                 }, 1000)
               }, 1000)
             })
@@ -453,7 +470,7 @@ export default {
     delMenu() {
       this.$confirm('确定要提交表单吗？')
         .then(_ => {
-          this.listLoading = true
+          this.openFullScreen()
           this.timer = setTimeout(() => {
             deleteMenu({ menuId: this.temp.menuId, parentId: this.temp.parentId }).then(resp => {
               if (resp.code === 200) {
@@ -468,7 +485,7 @@ export default {
               })
             })
             setTimeout(() => {
-              this.listLoading = false
+              this.closeFullScreen()
             }, 1000)
           }, 2000)
         })
@@ -477,13 +494,33 @@ export default {
     handleClose(done) {
       done()
     },
+    cancelIcon() {
+      this.$refs.innerDrawer.handleClose()
+    },
+    selectIcon() {
+      this.innerDrawer = true
+    },
     cancelForm() {
       this.$confirm('确定要关闭吗？')
         .then(_ => {
           this.resetTemp()
-          // this.listLoading = false
           this.dialog = false
         })
+    },
+    selectIconCode(icon) {
+      this.temp.icon = icon
+      this.$refs.innerDrawer.handleClose()
+    },
+    openFullScreen() {
+      this.listLoading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+    },
+    closeFullScreen() {
+      this.listLoading.close()
     }
   }
 }

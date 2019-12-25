@@ -201,8 +201,7 @@ export default {
       })
     },
     login() {
-      this.$router.push({
-        path: 'login' })
+      this.$router.push({ path: 'login' })
     },
     sendTelCode() {
       this.$refs.loginForm.validateField('phone', error => {

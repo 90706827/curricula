@@ -9,7 +9,7 @@ const tableRouter = {
   name: 'Table',
   meta: {
     title: '表格',
-    icon: 'table'
+    icon: 'el-icon-menu'
   },
   children: [
     {
@@ -17,28 +17,28 @@ const tableRouter = {
       component: () => import('@/views/table/dynamic-table/index'),
       name: 'DynamicTable',
       meta: { title: '动态表格',
-        icon: 'table' }
+        icon: 'el-icon-menu' }
     },
     {
       path: 'drag-table',
       component: () => import('@/views/table/drag-table'),
       name: 'DragTable',
       meta: { title: '拖拽表格',
-        icon: 'table' }
+        icon: 'el-icon-menu' }
     },
     {
       path: 'inline-edit-table',
       component: () => import('@/views/table/inline-edit-table'),
       name: 'InlineEditTable',
       meta: { title: '编辑表格',
-        icon: 'table' }
+        icon: 'el-icon-menu' }
     },
     {
       path: 'complex-table',
       component: () => import('@/views/table/complex-table'),
       name: 'ComplexTable',
       meta: { title: '复杂表格',
-        icon: 'table' }
+        icon: 'el-icon-menu' }
     }
   ]
 }

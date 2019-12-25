@@ -2,7 +2,7 @@ import { login, logout, getInfo, verCode, sendTelCode, forget, register } from '
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256
-import hand from '@/assets/default/headImg.gif'
+import hand from '@/assets/default/head1.jpg'
 import store from '@/store'
 
 const state = {
