@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 查询条件 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="菜单名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter(0)" />
+      <el-input v-model="listQuery.title" placeholder="菜单名称" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(0)">查 询</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-document-add" @click="addMenu()">新 增</el-button>
     </div>
@@ -116,7 +116,7 @@
       :with-header="false"
       direction="rtl"
     >
-      <div class="drawer-head"><label>添加菜单</label><span class="drawer-head-span" /></div>
+      <div class="drawer-head"><label>{{ isNewEdit === true ? '添加菜单' : '修改菜单' }}</label><span class="drawer-head-span" /></div>
       <div class="drawer-body">
         <el-form ref="dataForm" class="drawer-form-content" :rules="rules" :model="temp" label-width="80px">
           <div class="drawer-form-title"><label>菜单信息</label></div>
@@ -258,7 +258,7 @@
         </el-row>
 
       </div>
-
+      <!-- 图标选择 -->
       <el-drawer
         ref="innerDrawer"
         :append-to-body="true"
@@ -301,7 +301,7 @@ export default {
   data() {
     return {
       dialog: false,
-      listLoading: false,
+      loading: false,
       listQuery: {
         title: '',
         page: 1,
@@ -355,14 +355,14 @@ export default {
   },
   methods: {
     getList() {
-      this.openFullScreen()
+      this.openLoading()
       menuList(this.listQuery).then(response => {
-        this.list = response.data.content
+        this.list = response.data.list
         this.total = response.data.total
         this.listQuery.page = response.data.page
         this.listQuery.size = response.data.size
       })
-      this.closeFullScreen()
+      this.closeLoading()
     },
     load(tree, treeNode, resolve) {
       console.log('table:', tree.menuId, treeNode)
@@ -408,12 +408,9 @@ export default {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          // if (this.loading) {
-          //   return
-          // }
           this.$confirm('确定要提交表单吗？')
             .then(_ => {
-              this.openFullScreen()
+              this.openLoading()
               this.timer = setTimeout(() => {
                 saveOrUpdateMenu(this.temp).then(resp => {
                   if (resp.code === 200) {
@@ -429,7 +426,7 @@ export default {
                 })
                 // 动画关闭需要一定的时间
                 setTimeout(() => {
-                  this.closeFullScreen()
+                  this.closeLoading()
                 }, 1000)
               }, 1000)
             })
@@ -470,7 +467,7 @@ export default {
     delMenu() {
       this.$confirm('确定要提交表单吗？')
         .then(_ => {
-          this.openFullScreen()
+          this.openLoading()
           this.timer = setTimeout(() => {
             deleteMenu({ menuId: this.temp.menuId, parentId: this.temp.parentId }).then(resp => {
               if (resp.code === 200) {
@@ -485,7 +482,7 @@ export default {
               })
             })
             setTimeout(() => {
-              this.closeFullScreen()
+              this.closeLoading()
             }, 1000)
           }, 2000)
         })
@@ -511,16 +508,16 @@ export default {
       this.temp.icon = icon
       this.$refs.innerDrawer.handleClose()
     },
-    openFullScreen() {
-      this.listLoading = this.$loading({
+    openLoading() {
+      this.loading = this.$loading({
         lock: true,
         text: 'Loading',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
     },
-    closeFullScreen() {
-      this.listLoading.close()
+    closeLoading() {
+      this.loading.close()
     }
   }
 }

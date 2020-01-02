@@ -2,7 +2,6 @@ import { login, logout, getInfo, verCode, sendTelCode, forget, register } from '
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 const sha256 = require('js-sha256').sha256
-import hand from '@/assets/default/head1.jpg'
 import store from '@/store'
 
 const state = {
@@ -84,10 +83,6 @@ const actions = {
         if (!roles || roles.length <= 0) {
           reject('暂无权限，禁止访问!')
         }
-        let header = avatar
-        if (!avatar) {
-          header = hand + '?' + +new Date()
-        }
         const roleList = []
         roles.forEach(item => {
           const role = {}
@@ -103,7 +98,7 @@ const actions = {
         commit('SET_ROLES', roleList)
         commit('SET_ROLE', role)
         commit('SET_NAME', name)
-        commit('SET_AVATAR', header)
+        commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
         resolve(data)
       }).catch(error => {

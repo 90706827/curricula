@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import logo from '@/assets/default/logo.png'
 export default {
   name: 'SidebarLogo',
   props: {
@@ -26,7 +25,7 @@ export default {
   data() {
     return {
       title: '管理平台',
-      logo: logo + '?' + +new Date()
+      logo: 'http://www.images.xiaoke.com/default/logo.png?' + +new Date()
     }
   }
 }

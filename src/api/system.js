@@ -18,6 +18,13 @@ export function userList(data) {
   })
 }
 
+export function saveOrUpdateRole(data) {
+  return request({
+    url: '/system/saveOrUpdateRole',
+    method: 'post',
+    data
+  })
+}
 export function menuList(data) {
   return request({
     url: '/system/menuList',

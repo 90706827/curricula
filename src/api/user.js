@@ -27,17 +27,10 @@ export function userRemove(query) {
   })
 }
 
-export function getRoleAllList() {
-  return request({
-    url: '/user/getRoleAllList',
-    method: 'post'
-  })
-}
-
-export function getUserRoleList(query) {
+export function findUserRole(query) {
   const data = param(query)
   return request({
-    url: '/admin/user/getUserRoleList',
+    url: '/user/findUserRole',
     method: 'post',
     data
   })

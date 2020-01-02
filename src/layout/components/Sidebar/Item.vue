@@ -18,8 +18,7 @@ export default {
 
     if (icon) {
       vnodes.push(<i class={icon}/>)
-
-      // vnodes.push(<svg-icon icon-class={icon}/>)
+      // vnodes.push(<svg-icon class={icon}/>)
     }
 
     if (title) {
