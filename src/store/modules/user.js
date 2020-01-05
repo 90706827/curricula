@@ -9,7 +9,10 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  role: '',
+  school: '',
+  routers: []
 }
 
 const mutations = {
@@ -91,9 +94,11 @@ const actions = {
           roleList.push(role)
         })
         data.roles = roleList
-        const role = roleList[0].code
+        var role = roleList[0].code
+        if (window.localStorage['role']) {
+          role = window.localStorage['role']
+        }
         data.role = role
-        console.log('roleList', roleList)
         commit('SET_ROUTERS', routers)
         commit('SET_ROLES', roleList)
         commit('SET_ROLE', role)
@@ -175,6 +180,7 @@ const actions = {
   // 清除缓存
   resetToken({ commit }) {
     return new Promise(resolve => {
+      console.log('清除缓存')
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       commit('SET_ROLE', '')
@@ -186,12 +192,14 @@ const actions = {
 
   // 切换角色
   changeRoles({ commit, dispatch, state }, role) {
+    window.localStorage['role'] = role
     return new Promise(async resolve => {
       const { routers } = await dispatch('getInfo')
       resetRouter()
       const accessRoutes = await store.dispatch('permission/generateRoutes', { routers, role })
       router.addRoutes(accessRoutes)
       commit('SET_ROLE', role)
+      console.log('store.getters.role-', store.getters.role)
       store.dispatch('tagsView/delAllViews', null, { root: true })
       resolve()
     })

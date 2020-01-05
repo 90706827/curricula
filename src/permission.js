@@ -13,7 +13,6 @@ const whiteList = ['/login', '/auth-redirect', '/forget', '/register'] // no red
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-
   // set page title
   document.title = getPageTitle(to.meta.title)
 
@@ -34,7 +33,11 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { routers, role } = await store.dispatch('user/getInfo')
+          var { routers, role } = await store.dispatch('user/getInfo')
+          console.log('store.getters.role-', store.getters.role)
+          if (store.getters.role) {
+            role = store.getters.role
+          }
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/generateRoutes', { routers, role })
 

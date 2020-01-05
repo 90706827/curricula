@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 查询条件 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="菜单名称" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.name" placeholder="资源名称" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(0)">查 询</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-document-add" @click="addMenu()">新 增</el-button>
     </div>
@@ -10,9 +10,8 @@
     <!-- 表格 -->
     <el-table
       :data="list"
-      style="width: 100%; height: 100%"
-      row-key="menuId"
-      border=""
+      row-key="actionId"
+      :border="true"
       :stripe="true"
       :tree-props="{ children:'children', hasChildren: 'hasChildren'}"
       @row-click="editMenu"
@@ -21,68 +20,25 @@
         fixed
         header-align="center"
         align="left"
-        prop="title"
-        label="菜单名称"
-        width="200"
-      />
-      <el-table-column
-        align="center"
-        prop="icon"
-        label="图标"
-        width="60"
-      >
-        <template slot-scope="scope">
-          <i :class="scope.row.icon" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        align="center"
         prop="name"
-        label="菜单标识"
-        width="120"
+        label="资源名称"
       />
+
       <el-table-column
         align="center"
-        prop="path"
-        label="菜单路径"
-        width="120"
+        prop="url"
+        label="资源路径"
       />
       <el-table-column
         align="left"
         header-align="center"
-        prop="redirect"
-        label="重定向"
-        width="250"
+        prop="description"
+        label="注释"
       />
-      <el-table-column
-        align="center"
-        prop="component"
-        label="视图标识"
-        width="180"
-      />
-      <el-table-column
-        align="center"
-        prop="sort"
-        label="顺序"
-        width="60"
-      />
-      <el-table-column
-        align="center"
-        prop="hidden"
-        label="显示类型"
-        width="80"
-      >
-        <template slot-scope="{row}">
-          <span v-if="row.hidden=== 'false'">显示</span>
-          <span v-else-if="row.hidden=== 'true'">隐藏</span>
-          <span v-else>未知</span>
-        </template>
-      </el-table-column>
       <el-table-column
         align="center"
         prop="status"
         label="状态"
-        width="80"
       >
         <template slot-scope="{row}">
           <span v-if="row.status=== 1">正常</span>
@@ -90,13 +46,6 @@
           <span v-else>未知</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="left"
-        header-align="center"
-        prop="description"
-        label="描述"
-        width="250"
-      />
     </el-table>
     <!-- 分页 -->
     <pagination
@@ -243,18 +192,16 @@
       </div>
 
       <div class="drawer-foot">
-        <el-row :gutter="20">
-          <el-col :span="5"><span>&nbsp;</span></el-col>
-          <el-col :span="5">
+        <el-row type="flex" justify="center">
+          <el-col :span="6">
             <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateMenu()">保 存</el-button>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delMenu()">删 除</el-button>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
           </el-col>
-          <el-col :span="4"><span>&nbsp;</span></el-col>
         </el-row>
 
       </div>
@@ -288,14 +235,14 @@
   </div>
 </template>
 <script>
-import { menuList, menuChildList, saveOrUpdateMenu, deleteMenu } from '@/api/system'
+import { actionList, menuChildList, saveOrUpdateMenu, deleteMenu } from '@/api/action'
 import { selectMenu } from '@/api/common'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import elementIcons from './element-icons'
 
 export default {
-  name: 'MenuList',
+  name: 'Action',
   directives: { waves },
   components: { Pagination },
   data() {
@@ -303,7 +250,7 @@ export default {
       dialog: false,
       loading: false,
       listQuery: {
-        title: '',
+        name: '',
         page: 1,
         size: 5
       },
@@ -356,7 +303,7 @@ export default {
   methods: {
     getList() {
       this.openLoading()
-      menuList(this.listQuery).then(response => {
+      actionList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listQuery.page = response.data.page
@@ -503,6 +450,7 @@ export default {
           this.resetTemp()
           this.dialog = false
         })
+        .catch(_ => {})
     },
     selectIconCode(icon) {
       this.temp.icon = icon

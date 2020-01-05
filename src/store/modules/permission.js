@@ -116,7 +116,7 @@ const actions = {
     return new Promise(resolve => {
       let accessedRoutes
       console.log('routers', routers)
-      console.log('role', role)
+      console.log('role-', role)
       if (role === 'visitor') {
         accessedRoutes = asyncRoutes || []
       } else {

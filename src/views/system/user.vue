@@ -11,7 +11,10 @@
     </div>
     <!-- 列表 -->
     <el-table
+      style="width: 100%; overflow: hidden;"
       :data="list"
+      :border="true"
+      :stripe="true"
       row-key="userId"
       @row-click="editUser"
     >
@@ -21,10 +24,7 @@
         prop="photo"
       >
         <template slot-scope="{row}">
-          <el-image
-            style="width:40px; height:40px;"
-            :src="row.photo"
-          />
+          <el-avatar :src="row.photo" />
         </template>
       </el-table-column>
       <el-table-column
@@ -196,17 +196,13 @@
       </div>
 
       <div class="drawer-foot">
-        <el-row :gutter="20">
-          <el-col :span="5"><span>&nbsp;</span></el-col>
-          <el-col :span="5"><span>&nbsp;</span></el-col>
+        <el-row type="flex" justify="center">
           <el-col :span="5">
-            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateRole()">保 存</el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateUser()">保 存</el-button>
           </el-col>
           <el-col :span="5">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
           </el-col>
-          <el-col :span="5"><span>&nbsp;</span></el-col>
-          <el-col :span="5"><span>&nbsp;</span></el-col>
         </el-row>
       </div>
     </el-drawer>
@@ -215,7 +211,7 @@
 
 <script>
 import { findUserRole } from '@/api/user'
-import { userList, saveOrUpdateRole } from '@/api/system'
+import { userList, saveOrUpdateUser } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -359,7 +355,7 @@ export default {
       this.dialog = true
       this.isNewEdit = false
     },
-    saveOrUpdateRole() {
+    saveOrUpdateUser() {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -369,7 +365,7 @@ export default {
               console.log('temp:', this.temp)
               this.timer = setTimeout(() => {
                 console.log('temp:', this.temp)
-                saveOrUpdateRole(this.temp).then(resp => {
+                saveOrUpdateUser(this.temp).then(resp => {
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
@@ -399,6 +395,7 @@ export default {
           this.resetTemp()
           this.dialog = false
         })
+        .catch(_ => {})
     },
     openLoading() {
       this.loading = this.$loading({

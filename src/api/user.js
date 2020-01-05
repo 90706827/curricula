@@ -2,26 +2,17 @@ import request from '@/utils/request'
 
 import { param } from '@/utils'
 
-export function userSave(data) {
+export function userList(data) {
   return request({
-    url: '/admin/user/save',
+    url: '/user/userList',
     method: 'post',
     data
   })
 }
 
-export function userUpdate(data) {
+export function saveOrUpdateUser(data) {
   return request({
-    url: '/admin/user/update',
-    method: 'post',
-    data
-  })
-}
-
-export function userRemove(query) {
-  const data = param(query)
-  return request({
-    url: '/admin/user/delete',
+    url: '/user/saveOrUpdateUser',
     method: 'post',
     data
   })

@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="用户角色" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.name" placeholder="权限名称" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(0)">
         查询
       </el-button>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="addRole">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="addPrivilege">
         添加
       </el-button>
     </div>
@@ -13,8 +13,8 @@
     <el-table
       :data="list"
       border
-      row-key="roleId"
-      @row-click="editRole"
+      row-key="PrivilegeId"
+      @row-click="editPrivilege"
     >
       <el-table-column
         align="center"
@@ -83,7 +83,7 @@
             </el-col>
             <el-col :span="12">
               <el-input
-                v-model="temp.roleId"
+                v-model="temp.PrivilegeId"
                 type="hidden"
               />
             </el-col>
@@ -102,7 +102,7 @@
       <div class="drawer-foot">
         <el-row type="flex" justify="center">
           <el-col :span="5">
-            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateRole()">保 存</el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdatePrivilege()">保 存</el-button>
           </el-col>
           <el-col :span="5">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
@@ -114,12 +114,12 @@
 </template>
 
 <script>
-import { findRolePrivilege } from '@/api/role'
+import { findRolePrivilege } from '@/api/privilege'
 import { roleList, saveOrUpdateRole } from '@/api/system'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
-  name: 'Role',
+  name: 'Privilege',
   directives: { waves },
   components: { Pagination },
   data() {

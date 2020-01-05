@@ -32,7 +32,6 @@ export default {
 
       const role = this.$store.getters.role
       console.log('加载时角色：', role)
-
       return role
     }
   },
@@ -47,6 +46,7 @@ export default {
       console.log('roleCode', this.roleCode)
     },
     selectRole(role) {
+      console.log('selectRole:', role)
       this.roleCode = role
       this.$router.push('/')
       this.$store.dispatch('user/changeRoles', role)
@@ -60,7 +60,6 @@ export default {
       //   })
       // })
       // setTimeout(() => {
-
       // }, 2000)
     }
   }
