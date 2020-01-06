@@ -8,14 +8,6 @@ export function actionList(data) {
   })
 }
 
-export function actionChildList(data) {
-  return request({
-    url: '/action/actionChildList',
-    method: 'post',
-    data
-  })
-}
-
 export function saveOrUpdateAction(data) {
   return request({
     url: '/action/saveOrUpdateAction',

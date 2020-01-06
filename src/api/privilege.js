@@ -1,19 +1,26 @@
 import request from '@/utils/request'
 import { param } from '@/utils'
 
-export function findPrivilegeMenu(query) {
+export function findPrivilegeMenuAndAction(query) {
   const data = param(query)
   return request({
-    url: '/privilege/findPrivilegeMenu',
+    url: '/privilege/findPrivilegeMenuAndAction',
     method: 'post',
     data
   })
 }
 
-export function findPrivilegeAction(query) {
-  const data = param(query)
+export function privilegeList(data) {
   return request({
-    url: '/privilege/findPrivilegeAction',
+    url: '/privilege/privilegeList',
+    method: 'post',
+    data
+  })
+}
+
+export function saveOrUpdatePrivilege(data) {
+  return request({
+    url: '/privilege/saveOrUpdatePrivilege',
     method: 'post',
     data
   })

@@ -13,3 +13,10 @@ export function selectRole() {
     method: 'post'
   })
 }
+
+export function selectAction() {
+  return request({
+    url: '/common/selectAction',
+    method: 'post'
+  })
+}

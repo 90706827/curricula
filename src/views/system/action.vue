@@ -4,7 +4,7 @@
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="资源名称" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter(0)">查 询</el-button>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-document-add" @click="addMenu()">新 增</el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-document-add" @click="addAction()">新 增</el-button>
     </div>
 
     <!-- 表格 -->
@@ -14,7 +14,7 @@
       :border="true"
       :stripe="true"
       :tree-props="{ children:'children', hasChildren: 'hasChildren'}"
-      @row-click="editMenu"
+      @row-click="editAction"
     >
       <el-table-column
         fixed
@@ -65,63 +65,37 @@
       :with-header="false"
       direction="rtl"
     >
-      <div class="drawer-head"><label>{{ isNewEdit === true ? '添加菜单' : '修改菜单' }}</label><span class="drawer-head-span" /></div>
+      <div class="drawer-head"><label>{{ isNewEdit === true ? '添加资源' : '修改资源' }}</label><span class="drawer-head-span" /></div>
       <div class="drawer-body">
         <el-form ref="dataForm" class="drawer-form-content" :rules="rules" :model="temp" label-width="80px">
-          <div class="drawer-form-title"><label>菜单信息</label></div>
+          <div class="drawer-form-title"><label>资源信息</label></div>
+          <el-row v-show="true">
+            <el-col>
+              <el-input
+                v-model="temp.actionId"
+                type="hidden"
+              />
+            </el-col>
+          </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="父类菜单" label-width="100px" prop="parentId">
+              <el-form-item label="父类资源" label-width="100px" prop="parentId">
                 <el-cascader
                   v-model="temp.parentId"
-                  placeholder="选择所属父类菜单"
+                  placeholder="选择所属父类资源"
+                  :clearable="true"
                   :multiple="false"
-                  :options="selectMenu"
+                  :options="selectAction"
                   :props="{ checkStrictly: true,expandTrigger:'hover',emitPath:false}"
                   :show-all-levels="false"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="菜单图标" label-width="100px" prop="icon">
-                <el-button type="primary" :icon="temp.icon" @click="selectIcon()">选择图标</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="菜单名称" label-width="100px" prop="title">
-                <el-input
-                  v-model="temp.title"
-                  placeholder="填写菜单名称"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="菜单路径" label-width="100px" prop="path">
-                <el-input
-                  v-model="temp.path"
-                  placeholder="填写菜单路径"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="菜单标识" label-width="100px" prop="name">
+              <el-form-item label="资源名称" label-width="100px" prop="name">
                 <el-input
                   v-model="temp.name"
-                  placeholder="填写菜单标识"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="菜单视图" label-width="100px" prop="component">
-                <el-input
-                  v-model="temp.component"
-                  placeholder="填写菜单视图"
+                  placeholder="填写资源名称"
                 />
               </el-form-item>
             </el-col>
@@ -129,64 +103,37 @@
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="重定路径" label-width="100px" prop="redirect">
+              <el-form-item label="资源路径" label-width="100px" prop="url">
                 <el-input
-                  v-model="temp.redirect"
-                  placeholder="填写重定向路径"
+                  v-model="temp.url"
+                  placeholder="填写资源路径"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="菜单排序" label-width="100px" prop="sort">
+              <el-form-item label="注释" label-width="100px" prop="description">
                 <el-input
-                  v-model="temp.sort"
-                  type="number"
-                  placeholder="填写菜单排序"
+                  v-model="temp.description"
+                  placeholder="填写注释"
                 />
               </el-form-item>
             </el-col>
           </el-row>
-
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="菜单隐藏" label-width="100px" prop="hidden">
-                <el-switch
-                  v-model="temp.hidden"
-                  active-value="false"
-                  inactive-value="true"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="菜单状态" label-width="100px" prop="status">
+              <el-form-item label="资源状态" label-width="100px" prop="status">
                 <el-switch
                   v-model="temp.status"
                   active-value="1"
                   inactive-value="0"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="正常"
+                  inactive-text="冻结"
                 />
               </el-form-item>
             </el-col>
-          </el-row>
-
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="备注" label-width="100px" prop="description">
-                <el-input
-                  v-model="temp.description"
-                  placeholder="填写备注信息"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="temp.menuId"
-                type="hidden"
-              />
-              <el-input
-                v-model="temp.icon"
-                type="hidden"
-              />
-            </el-col>
+            <el-col :span="12" />
           </el-row>
         </el-form>
       </div>
@@ -194,10 +141,10 @@
       <div class="drawer-foot">
         <el-row type="flex" justify="center">
           <el-col :span="6">
-            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateMenu()">保 存</el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateAction()">保 存</el-button>
           </el-col>
           <el-col :span="6">
-            <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delMenu()">删 除</el-button>
+            <el-button type="danger" icon="el-icon-delete" :disabled="disabled" @click="delAction()">删 除</el-button>
           </el-col>
           <el-col :span="6">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
@@ -205,41 +152,15 @@
         </el-row>
 
       </div>
-      <!-- 图标选择 -->
-      <el-drawer
-        ref="innerDrawer"
-        :append-to-body="true"
-        :before-close="handleClose"
-        :visible.sync="innerDrawer"
-        :with-header="false"
-        :show-close="false"
-      >
-        <div class="drawer-head"><label>选择图标</label><span class="drawer-head-span" /></div>
-        <div class="drawer-body">
-          <div v-for="item of elementIcons" :key="item" @click="selectIconCode(item)">
-            <div class="icon-item">
-              <i :class="item" />
-            </div>
-          </div>
-        </div>
 
-        <div class="drawer-foot">
-          <el-row>
-            <el-col>
-              <el-button type="warning" icon="el-icon-close" @click="cancelIcon">关 闭</el-button>
-            </el-col>
-          </el-row>
-        </div>
-      </el-drawer>
     </el-drawer>
   </div>
 </template>
 <script>
-import { actionList, menuChildList, saveOrUpdateMenu, deleteMenu } from '@/api/action'
-import { selectMenu } from '@/api/common'
+import { actionList, saveOrUpdateAction, deleteAction } from '@/api/action'
+import { selectAction } from '@/api/common'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
-import elementIcons from './element-icons'
 
 export default {
   name: 'Action',
@@ -257,44 +178,20 @@ export default {
       total: 0,
       list: [],
       temp: {
-        menuId: undefined,
+        actiond: undefined,
         parentId: undefined,
-        path: '',
-        redirect: '',
-        component: '',
-        hidden: 'false',
         name: '',
-        title: '',
-        icon: 'el-icon-tickets',
-        sort: '',
+        url: '',
         description: '',
         status: '1'
       },
-      dialogStatus: '',
-      dialogFormVisible: false,
       rules: {
-        title: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
-        path: [{ required: true, message: '请填写菜单路径', trigger: 'blur' }],
-        icon: [{ required: true, message: '请填写菜单图标', trigger: 'blur' }],
-        name: [{ required: true, message: '请填写菜单标识', trigger: 'blur' }]
+        name: [{ required: true, message: '请填写资源名称', trigger: 'blur' }],
+        url: [{ required: true, message: '请填写资源路径', trigger: 'blur' }]
       },
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      formLabelWidth: '80px',
-      activeName: 'first',
       disabled: true,
-      selectMenu: [],
-      isNewEdit: true,
-      innerDrawer: false,
-      elementIcons
+      selectAction: [],
+      isNewEdit: true
     }
   },
   created() {
@@ -311,14 +208,6 @@ export default {
       })
       this.closeLoading()
     },
-    load(tree, treeNode, resolve) {
-      console.log('table:', tree.menuId, treeNode)
-      const menuId = tree.menuId
-      menuChildList({ parentId: menuId }).then(resp => {
-        console.log('menuChildList:', resp.data)
-        resolve(resp.data)
-      })
-    },
     handleFilter(page) {
       if (page) {
         this.listQuery.page = page.page
@@ -328,30 +217,24 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        menuId: undefined,
+        actiond: undefined,
         parentId: undefined,
-        path: '',
-        redirect: '',
-        component: '',
-        hidden: 'false',
         name: '',
-        title: '',
-        icon: '',
-        sort: '',
+        url: '',
         description: '',
         status: '1'
       }
     },
-    addMenu() {
+    addAction() {
       if (this.isNewEdit === false) {
         this.isNewEdit = true
         this.resetTemp()
       }
-      this.loadSelectMenu()
+      this.loadSelectAction()
       this.dialog = true
       this.disabled = true
     },
-    saveOrUpdateMenu(done) {
+    saveOrUpdateAction(done) {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -359,11 +242,10 @@ export default {
             .then(_ => {
               this.openLoading()
               this.timer = setTimeout(() => {
-                saveOrUpdateMenu(this.temp).then(resp => {
+                saveOrUpdateAction(this.temp).then(resp => {
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
-                    this.dialogFormVisible = false
                     this.getList()
                   }
                   this.$message({
@@ -381,46 +263,39 @@ export default {
         }
       })
     },
-    loadSelectMenu() {
-      selectMenu().then(resp => {
-        this.selectMenu = resp.data
+    loadSelectAction() {
+      selectAction().then(resp => {
+        this.selectAction = resp.data
       })
     },
-    editMenu(row, event, column) {
+    editAction(row, event, column) {
       console.log('row', row)
+      this.loadSelectAction()
       this.isNewEdit = false
-      this.temp.menuId = row.menuId
+      this.temp.actionId = row.actionId
       this.temp.parentId = row.parentId
-      this.temp.path = row.path
-      this.temp.redirect = row.redirect
-      this.temp.component = row.component
-      this.temp.hidden = row.hidden
       this.temp.name = row.name
-      this.temp.title = row.title
-      this.temp.icon = row.icon
-      this.temp.sort = row.sort
+      this.temp.url = row.url
+      this.temp.status = String(row.status)
       this.temp.description = row.description
-      this.temp.status = row.status
 
-      this.loadSelectMenu()
+      console.log('temp', this.temp)
       this.dialog = true
       if (row.children) {
-        console.log('disabled')
         this.disabled = true
       } else {
         this.disabled = false
       }
     },
-    delMenu() {
+    delAction() {
       this.$confirm('确定要提交表单吗？')
         .then(_ => {
           this.openLoading()
           this.timer = setTimeout(() => {
-            deleteMenu({ menuId: this.temp.menuId, parentId: this.temp.parentId }).then(resp => {
+            deleteAction({ actionId: this.temp.actionId, parentId: this.temp.parentId }).then(resp => {
               if (resp.code === 200) {
                 this.$refs.drawer.handleClose()
                 this.resetTemp()
-                this.dialogFormVisible = false
                 this.getList()
               }
               this.$message({
@@ -438,12 +313,6 @@ export default {
     handleClose(done) {
       done()
     },
-    cancelIcon() {
-      this.$refs.innerDrawer.handleClose()
-    },
-    selectIcon() {
-      this.innerDrawer = true
-    },
     cancelForm() {
       this.$confirm('确定要关闭吗？')
         .then(_ => {
@@ -451,10 +320,6 @@ export default {
           this.dialog = false
         })
         .catch(_ => {})
-    },
-    selectIconCode(icon) {
-      this.temp.icon = icon
-      this.$refs.innerDrawer.handleClose()
     },
     openLoading() {
       this.loading = this.$loading({

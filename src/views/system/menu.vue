@@ -204,6 +204,10 @@
                   v-model="temp.hidden"
                   active-value="false"
                   inactive-value="true"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="显示"
+                  inactive-text="隐藏"
                 />
               </el-form-item>
             </el-col>
@@ -213,6 +217,10 @@
                   v-model="temp.status"
                   active-value="1"
                   inactive-value="0"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="正常"
+                  inactive-text="冻结"
                 />
               </el-form-item>
             </el-col>
@@ -320,26 +328,12 @@ export default {
         description: '',
         status: '1'
       },
-      dialogStatus: '',
-      dialogFormVisible: false,
       rules: {
         title: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
         path: [{ required: true, message: '请填写菜单路径', trigger: 'blur' }],
         icon: [{ required: true, message: '请填写菜单图标', trigger: 'blur' }],
         name: [{ required: true, message: '请填写菜单标识', trigger: 'blur' }]
       },
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      formLabelWidth: '80px',
-      activeName: 'first',
       disabled: true,
       selectMenu: [],
       isNewEdit: true,
@@ -405,7 +399,6 @@ export default {
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
-                    this.dialogFormVisible = false
                     this.getList()
                   }
                   this.$message({
@@ -442,7 +435,7 @@ export default {
       this.temp.icon = row.icon
       this.temp.sort = row.sort
       this.temp.description = row.description
-      this.temp.status = row.status
+      this.temp.status = String(row.status)
 
       this.loadSelectMenu()
       this.dialog = true
@@ -462,7 +455,6 @@ export default {
               if (resp.code === 200) {
                 this.$refs.drawer.handleClose()
                 this.resetTemp()
-                this.dialogFormVisible = false
                 this.getList()
               }
               this.$message({

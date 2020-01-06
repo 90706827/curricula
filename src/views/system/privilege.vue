@@ -13,7 +13,7 @@
     <el-table
       :data="list"
       border
-      row-key="PrivilegeId"
+      row-key="privilegeId"
       @row-click="editPrivilege"
     >
       <el-table-column
@@ -50,24 +50,24 @@
       :with-header="false"
       direction="rtl"
     >
-      <div class="drawer-head"><label>{{ isNewEdit === true ? '添加角色' : '修改角色' }}</label><span class="drawer-head-span" /></div>
+      <div class="drawer-head"><label>{{ isNewEdit === true ? '添加权限' : '修改权限' }}</label><span class="drawer-head-span" /></div>
       <div class="drawer-body">
         <el-form ref="dataForm" class="drawer-form-content" :rules="rules" :model="temp" label-width="80px">
-          <div class="drawer-form-title"><label>角色信息</label></div>
+          <div class="drawer-form-title"><label>权限信息</label></div>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="角色名称" label-width="100px" prop="name">
+              <el-form-item label="权限名称" label-width="100px" prop="name">
                 <el-input
                   v-model="temp.name"
-                  placeholder="填写角色名称"
+                  placeholder="填写权限名称"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="角色标识" label-width="100px" prop="ename">
+              <el-form-item label="权限标识" label-width="100px" prop="ename">
                 <el-input
                   v-model="temp.ename"
-                  placeholder="填写角色标识"
+                  placeholder="填写权限标识"
                 />
               </el-form-item>
             </el-col>
@@ -83,16 +83,33 @@
             </el-col>
             <el-col :span="12">
               <el-input
-                v-model="temp.PrivilegeId"
+                v-model="temp.privilegeId"
                 type="hidden"
               />
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="角色权限" label-width="100px" prop="privileges">
-              <el-checkbox-group v-model="temp.privileges">
-                <el-checkbox v-for="privilege in privilegeList" :key="privilege.value" :label="privilege.value">{{ privilege.label }}</el-checkbox>
-              </el-checkbox-group>
+            <el-form-item label="权限菜单" label-width="100px" prop="menus">
+              <el-tree
+                ref="menuTree"
+                :data="menuList"
+                show-checkbox
+                node-key="value"
+                :default-checked-keys="temp.menus"
+                :props="menuList"
+              />
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="权限资源" label-width="100px" prop="actions">
+              <el-tree
+                ref="actionTree"
+                :data="actionList"
+                show-checkbox
+                node-key="value"
+                :default-checked-keys="temp.actions"
+                :props="defaultProps"
+              />
             </el-form-item>
           </el-row>
 
@@ -114,8 +131,7 @@
 </template>
 
 <script>
-import { findRolePrivilege } from '@/api/privilege'
-import { roleList, saveOrUpdateRole } from '@/api/system'
+import { privilegeList, saveOrUpdatePrivilege, findPrivilegeMenuAndAction } from '@/api/privilege'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -156,19 +172,24 @@ export default {
       },
       total: 0,
       list: [],
-      privilegeList: [],
+      menuList: [],
+      actionList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
       temp: {
-        roleId: '',
+        privilegeId: '',
         name: '',
         ename: '',
         description: '',
-        privileges: []
+        menus: [],
+        actions: []
       },
       rules: {
         name: [{ required: true, validator: validateName }],
         ename: [{ required: true, validator: validateEname }],
-        description: [{ validator: validateDescription }],
-        privileges: [{ required: true, message: '角色权限' }]
+        description: [{ validator: validateDescription }]
       }
     }
   },
@@ -178,7 +199,7 @@ export default {
   methods: {
     getList() {
       this.openLoading()
-      roleList(this.listQuery).then(response => {
+      privilegeList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listQuery.page = response.data.page
@@ -195,47 +216,56 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        roleId: undefined,
+        privilegeId: undefined,
         name: '',
         ename: '',
         description: '',
-        privileges: []
+        menus: [],
+        actions: []
       }
     },
-    findRolePrivilege(roleId) {
-      findRolePrivilege({ roleId: roleId }).then(response => {
-        this.privilegeList = response.data.privilegeList
-        this.temp.privileges = response.data.rolePrivilegeList
+    findPrivilegeMenuAndAction(privilegeId) {
+      findPrivilegeMenuAndAction({ privilegeId: privilegeId }).then(response => {
+        this.menuList = response.data.menuList
+        this.temp.menus = response.data.menus
+        this.actionList = response.data.actionList
+        this.temp.actions = response.data.actions
       })
     },
-    addRole() {
+    addPrivilege() {
       if (this.isNewEdit === false) {
         this.resetTemp()
-        this.findRolePrivilege()
+        this.findPrivilegeMenuAndAction()
         this.isNewEdit = true
       }
       this.dialog = true
     },
-    editRole(row, event, column) {
-      this.findRolePrivilege(row.roleId)
-      this.temp.roleId = row.roleId
+    editPrivilege(row, event, column) {
+      this.findPrivilegeMenuAndAction(row.privilegeId)
+      this.temp.privilegeId = row.privilegeId
       this.temp.name = row.name
       this.temp.ename = row.ename
       this.temp.description = row.description
       this.dialog = true
       this.isNewEdit = false
     },
-    saveOrUpdateRole() {
+    saveOrUpdatePrivilege() {
       console.log('save', this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.$confirm('确定要提交表单吗？')
             .then(_ => {
               this.openLoading()
-              console.log('temp:', this.temp)
               this.timer = setTimeout(() => {
-                console.log('temp:', this.temp)
-                saveOrUpdateRole(this.temp).then(resp => {
+                this.temp.menus = this.$refs.menuTree.getCheckedKeys()
+                this.$refs.menuTree.getHalfCheckedKeys().forEach(temp => {
+                  this.temp.menus.push(temp)
+                })
+                this.temp.actions = this.$refs.actionTree.getCheckedKeys()
+                this.$refs.actionTree.getHalfCheckedKeys().forEach(temp => {
+                  this.temp.actions.push(temp)
+                })
+                saveOrUpdatePrivilege(this.temp).then(resp => {
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()
                     this.resetTemp()
