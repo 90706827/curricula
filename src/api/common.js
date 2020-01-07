@@ -7,13 +7,6 @@ export function selectMenu() {
   })
 }
 
-export function selectRole() {
-  return request({
-    url: '/common/selectRole',
-    method: 'post'
-  })
-}
-
 export function selectAction() {
   return request({
     url: '/common/selectAction',

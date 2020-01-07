@@ -122,6 +122,9 @@
             <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdatePrivilege()">保 存</el-button>
           </el-col>
           <el-col :span="5">
+            <el-button type="danger" icon="el-icon-delete" @click="delPrivilege()">删 除</el-button>
+          </el-col>
+          <el-col :span="5">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
           </el-col>
         </el-row>
@@ -131,7 +134,7 @@
 </template>
 
 <script>
-import { privilegeList, saveOrUpdatePrivilege, findPrivilegeMenuAndAction } from '@/api/privilege'
+import { privilegeList, saveOrUpdatePrivilege, findPrivilegeMenuAndAction, deletePrivilege } from '@/api/privilege'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -285,6 +288,29 @@ export default {
             .catch(_ => {})
         }
       })
+    },
+    delPrivilege() {
+      this.$confirm('确定要删除权限吗？')
+        .then(_ => {
+          this.openLoading()
+          this.timer = setTimeout(() => {
+            deletePrivilege({ privilegeId: this.temp.privilegeId }).then(resp => {
+              if (resp.code === 200) {
+                this.$refs.drawer.handleClose()
+                this.resetTemp()
+                this.getList()
+              }
+              this.$message({
+                message: resp.code === 200 ? '删除成功！' : resp.message,
+                type: resp.code === 200 ? 'success' : 'error'
+              })
+            })
+            setTimeout(() => {
+              this.closeLoading()
+            }, 1000)
+          }, 2000)
+        })
+        .catch(_ => {})
     },
     handleClose(done) {
       done()

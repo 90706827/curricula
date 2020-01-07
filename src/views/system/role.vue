@@ -105,6 +105,9 @@
             <el-button type="primary" icon="el-icon-edit" @click="saveOrUpdateRole()">保 存</el-button>
           </el-col>
           <el-col :span="5">
+            <el-button type="danger" icon="el-icon-delete" @click="delRole()">删 除</el-button>
+          </el-col>
+          <el-col :span="5">
             <el-button type="warning" icon="el-icon-close" @click="cancelForm">关 闭</el-button>
           </el-col>
         </el-row>
@@ -114,7 +117,7 @@
 </template>
 
 <script>
-import { roleList, saveOrUpdateRole, findRolePrivilege } from '@/api/role'
+import { roleList, saveOrUpdateRole, findRolePrivilege, deleteRole } from '@/api/role'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
@@ -254,6 +257,29 @@ export default {
             .catch(_ => {})
         }
       })
+    },
+    delRole() {
+      this.$confirm('确定要删除角色吗？')
+        .then(_ => {
+          this.openLoading()
+          this.timer = setTimeout(() => {
+            deleteRole({ roleId: this.temp.roleId }).then(resp => {
+              if (resp.code === 200) {
+                this.$refs.drawer.handleClose()
+                this.resetTemp()
+                this.getList()
+              }
+              this.$message({
+                message: resp.code === 200 ? '删除成功！' : resp.message,
+                type: resp.code === 200 ? 'success' : 'error'
+              })
+            })
+            setTimeout(() => {
+              this.closeLoading()
+            }, 1000)
+          }, 2000)
+        })
+        .catch(_ => {})
     },
     handleClose(done) {
       done()

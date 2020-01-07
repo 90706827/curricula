@@ -447,7 +447,7 @@ export default {
       }
     },
     delMenu() {
-      this.$confirm('确定要提交表单吗？')
+      this.$confirm('确定要删除菜单吗？')
         .then(_ => {
           this.openLoading()
           this.timer = setTimeout(() => {

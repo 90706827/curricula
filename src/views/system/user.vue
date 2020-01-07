@@ -11,16 +11,16 @@
     </div>
     <!-- 列表 -->
     <el-table
-      style="width: 100%; overflow: hidden;"
+      style="width: 100%;"
       :data="list"
       :border="true"
-      :stripe="true"
       row-key="userId"
       @row-click="editUser"
     >
       <el-table-column
         align="center"
         label="头像"
+        width="80"
         prop="photo"
       >
         <template slot-scope="{row}">
@@ -210,8 +210,7 @@
 </template>
 
 <script>
-import { findUserRole } from '@/api/user'
-import { userList, saveOrUpdateUser } from '@/api/user'
+import { userList, saveOrUpdateUser, findUserRole } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {

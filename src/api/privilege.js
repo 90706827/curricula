@@ -25,3 +25,11 @@ export function saveOrUpdatePrivilege(data) {
     data
   })
 }
+
+export function deletePrivilege(data) {
+  return request({
+    url: '/privilege/deletePrivilege',
+    method: 'post',
+    data
+  })
+}

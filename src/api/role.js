@@ -25,3 +25,11 @@ export function saveOrUpdateRole(data) {
     data
   })
 }
+
+export function deleteRole(data) {
+  return request({
+    url: '/role/deleteRole',
+    method: 'post',
+    data
+  })
+}
