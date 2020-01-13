@@ -61,7 +61,7 @@
       >
         <template slot-scope="{row}">
           <span v-if="row.gender=== 1">男</span>
-          <span v-else-if="row.gender=== 0">女</span>
+          <span v-else-if="row.gender=== 2">女</span>
           <span v-else>未知</span>
         </template>
       </el-table-column>
@@ -257,7 +257,7 @@ export default {
 
     return {
       gender: [{ value: 1, label: '男' }, { value: 2, label: '女' }],
-      status: [{ value: 0, label: '待激活' }, { value: 1, label: '正常' }, { value: 2, label: '冻结' }],
+      status: [{ value: '0', label: '待激活' }, { value: '1', label: '正常' }, { value: '2', label: '冻结' }],
       loading: true,
       dialog: false,
       disabled: false,
@@ -276,7 +276,7 @@ export default {
         nickname: '',
         password: 'abcd-123',
         gender: 1,
-        status: 0,
+        status: '0',
         photo: 'http://www.images.xiaoke.com/default/head6.jpg',
         email: '',
         phone: '',
@@ -320,7 +320,7 @@ export default {
         username: '',
         password: 'abcd-123',
         gender: 1,
-        status: 0,
+        status: '0',
         photo: 'http://www.images.xiaoke.com/default/head6.jpg',
         email: '',
         phone: '',
@@ -348,6 +348,7 @@ export default {
       this.temp.nickname = row.nickname
       this.temp.username = row.username
       this.temp.gender = row.gender
+      this.temp.status = row.status
       this.temp.photo = row.photo
       this.temp.email = row.email
       this.temp.phone = row.phone
