@@ -93,10 +93,10 @@
               <el-tree
                 ref="menuTree"
                 :data="menuList"
-                show-checkbox
+                show-checkbox="true"
                 node-key="value"
                 :default-checked-keys="temp.menus"
-                :props="menuList"
+                :props="defaultProps"
               />
             </el-form-item>
           </el-row>
@@ -105,7 +105,7 @@
               <el-tree
                 ref="actionTree"
                 :data="actionList"
-                show-checkbox
+                show-checkbox="true"
                 node-key="value"
                 :default-checked-keys="temp.actions"
                 :props="defaultProps"
@@ -261,13 +261,14 @@ export default {
               this.openLoading()
               this.timer = setTimeout(() => {
                 this.temp.menus = this.$refs.menuTree.getCheckedKeys()
-                this.$refs.menuTree.getHalfCheckedKeys().forEach(temp => {
-                  this.temp.menus.push(temp)
-                })
+                // 选取半选中的父节点
+                // this.$refs.menuTree.getHalfCheckedKeys().forEach(temp => {
+                //   this.temp.menus.push(temp)
+                // })
                 this.temp.actions = this.$refs.actionTree.getCheckedKeys()
-                this.$refs.actionTree.getHalfCheckedKeys().forEach(temp => {
-                  this.temp.actions.push(temp)
-                })
+                // this.$refs.actionTree.getHalfCheckedKeys().forEach(temp => {
+                //   this.temp.actions.push(temp)
+                // })
                 saveOrUpdatePrivilege(this.temp).then(resp => {
                   if (resp.code === 200) {
                     this.$refs.drawer.handleClose()

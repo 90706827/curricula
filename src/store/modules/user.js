@@ -82,8 +82,8 @@ const actions = {
           avatar,
           introduction
         } = data
-
-        if (!roles || roles.length <= 0) {
+        console.log(response.code)
+        if (response.code !== 402 && (!roles || roles.length <= 0)) {
           reject('暂无权限，禁止访问!')
         }
         const roleList = []
