@@ -125,6 +125,7 @@
                 <el-cascader
                   v-model="temp.parentId"
                   placeholder="选择所属父类菜单"
+                  :clearable="true"
                   :multiple="false"
                   :options="selectMenu"
                   :props="{ checkStrictly: true,expandTrigger:'hover',emitPath:false}"
@@ -324,7 +325,7 @@ export default {
         name: '',
         title: '',
         icon: 'el-icon-tickets',
-        sort: '',
+        sort: '1',
         description: '',
         status: '1'
       },
